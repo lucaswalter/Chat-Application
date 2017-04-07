@@ -6,7 +6,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ClientChatApplication"
         mc:Ignorable="d"
-        Title="Chat Client" Height="350" Width="525">
+        Title="Chat Client" Height="500" Width="900"
+        ResizeMode="NoResize">
 
     <!--<Controls:MetroWindow.LeftWindowCommands>
         <Controls:WindowCommands>
@@ -15,6 +16,14 @@
     </Controls:MetroWindow.LeftWindowCommands>-->
 
     <Grid>
-        
+        <ListBox HorizontalAlignment="Left" Height="414" Margin="10,45,0,0" VerticalAlignment="Top" Width="179"/>
+        <Label Content="Friends List" HorizontalAlignment="Left" Margin="55,10,0,0" VerticalAlignment="Top" Width="90" FontSize="15" FontWeight="Bold"/>
+        <GridSplitter HorizontalAlignment="Left" Height="471" Margin="194,0,0,0" VerticalAlignment="Top" Width="2"/>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="201,433,0,0" TextWrapping="Wrap" Text="Type your message..." VerticalAlignment="Top" Width="584"/>
+        <Button Content="Send" HorizontalAlignment="Left" Margin="790,432,0,0" VerticalAlignment="Top" Width="94"/>
+        <TextBlock HorizontalAlignment="Left" Margin="201,10,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Height="410" Width="683"/>
+        <GridSplitter HorizontalAlignment="Left" Height="2" Margin="196,425,0,0" VerticalAlignment="Top" Width="698"/>
+
+
     </Grid>
 </Controls:MetroWindow>
