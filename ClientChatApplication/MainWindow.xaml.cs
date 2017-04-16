@@ -1,17 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Net;
+using System.Net.Sockets;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using ClientChatApplication.Messages;
 
 namespace ClientChatApplication
 {
@@ -20,15 +11,71 @@ namespace ClientChatApplication
     /// </summary>
     public partial class MainWindow
     {
+
+        private Socket chatSocket;
+        private EndPoint epRemote;
+        private byte[] buffer;
+
+
         public MainWindow()
         {
             InitializeComponent();
 
-            //Write the IP addresses and ports that we are listening on to the chatBox
-            AppendLineToChatBox("Initialized WPF Chat Application");
+            try
+            {
+                // Setup Socket
+                chatSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+                chatSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+
+                // Attempt Remote Connection
+                // TODO: Add Actuall Server IP Address & Port
+                epRemote = new IPEndPoint(IPAddress.Parse(GetLocalIP()), Convert.ToInt32("3002"));
+                chatSocket.Connect(epRemote);
+
+                // Begin Listening To A Specific Port
+                buffer = new byte[1500];
+                chatSocket.BeginReceiveFrom(buffer, 0, buffer.Length, SocketFlags.None, ref epRemote, new AsyncCallback(MessageCallBack), buffer);
+                
+            }
+            catch (Exception e)
+            {
+                AppendLineToChatBox(e.ToString());
+            }
+
+
+            // Write Line To Chat Box
+            AppendLineToChatBox("Successfull Connection To Server!");
+
+
         }
 
-        #region UI Events
+        #region Networking
+
+        /// <summary>
+        /// Return Your Ownn IP Address
+        /// </summary>
+        private string GetLocalIP()
+        {
+            IPHostEntry host;
+            host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (IPAddress ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip.ToString();
+                }
+            }
+            return "127.0.0.1";
+        }
+
+        private void MessageCallBack(IAsyncResult result)
+        {
+
+        }
+
+        #endregion
+
+        #region UI Methods
 
         /// <summary>
         /// Append the provided message to the chatBox text box.
@@ -79,7 +126,8 @@ namespace ClientChatApplication
 
         #endregion
 
-        #region Message Handling
+
+        #region Messaging
 
         /// <summary>
         /// Send our message.
