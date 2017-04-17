@@ -95,10 +95,13 @@ namespace ClientChatApplication
                     // Retrieve Data
                     aux = (byte[])asyncResult.AsyncState;
 
-                    // Converte Data To JSON String
+                    // Decode Byte Array
                     string jsonStr = Encoding.ASCII.GetString(aux);
 
-                    // TODO: Deserialize JSON & Handle Message
+                    // Deserialize JSON & Handle Message
+                    Message message = JsonConvert.DeserializeObject<Message>(jsonStr);
+
+                    // TODO: Handle Messange Action
 
                     // Start To Listen Again
                     buffer = new byte[1500];
