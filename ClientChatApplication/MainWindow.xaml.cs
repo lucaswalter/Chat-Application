@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Windows;
 using System.Windows.Input;
 
@@ -12,10 +13,12 @@ namespace ClientChatApplication
     public partial class MainWindow
     {
 
+        // Communication Variables
         private Socket chatSocket;
-        private EndPoint epRemote;
-        private byte[] buffer;
+        private EndPoint epLocal, epRemote;
 
+        // Receive Data
+        private byte[] buffer;
 
         public MainWindow()
         {
@@ -27,8 +30,14 @@ namespace ClientChatApplication
                 chatSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
                 chatSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
 
+
+                // Bind Local Socket
+                // TODO: Decide Port Configuration
+                epLocal = new IPEndPoint(IPAddress.Parse(GetLocalIP()), Convert.ToInt32("3001"));
+                chatSocket.Bind(epLocal);
+
                 // Attempt Remote Connection
-                // TODO: Add Actuall Server IP Address & Port
+                // TODO: Add Actual Server IP Address & Port
                 epRemote = new IPEndPoint(IPAddress.Parse(GetLocalIP()), Convert.ToInt32("3002"));
                 chatSocket.Connect(epRemote);
 
@@ -52,7 +61,7 @@ namespace ClientChatApplication
         #region Networking
 
         /// <summary>
-        /// Return Your Ownn IP Address
+        /// Return Your Own IP Address
         /// </summary>
         private string GetLocalIP()
         {
@@ -66,11 +75,6 @@ namespace ClientChatApplication
                 }
             }
             return "127.0.0.1";
-        }
-
-        private void MessageCallBack(IAsyncResult result)
-        {
-
         }
 
         #endregion
@@ -132,6 +136,7 @@ namespace ClientChatApplication
         /// <summary>
         /// Send our message.
         /// </summary>
+        // TODO: Implement Network Functionality
         private void SendMessage()
         {
             if (!string.IsNullOrEmpty(messageText.Text))
@@ -139,6 +144,43 @@ namespace ClientChatApplication
                 AppendLineToChatBox(messageText.Text);
                 messageText.Clear();
             }           
+        }
+
+        /// <summary>
+        /// Message Callback Attached To BeginReceive From
+        /// </summary>
+        /// <param name="result"></param>
+        private void MessageCallBack(IAsyncResult asyncResult)
+        {
+            try
+            {
+                int size = chatSocket.EndReceiveFrom(asyncResult, ref epRemote);
+
+                // Check If Data Exists
+                if (size > 0)
+                {
+                    // Auxiliary Buffer
+                    byte[] aux = new byte[1500];
+
+                    // Retrieve Data
+                    aux = (byte[])asyncResult.AsyncState;
+
+                    // Converte Data To JSON String
+                    string jsonStr = Encoding.UTF8.GetString(aux);
+
+                    // TODO: Deserialize JSON & Handle Message
+
+                    // Start To Listen Again
+                    buffer = new byte[1500];
+                    chatSocket.BeginReceiveFrom(buffer, 0, buffer.Length, SocketFlags.None, ref epRemote, new AsyncCallback(MessageCallBack), buffer);
+
+                }
+            }
+            catch (Exception e)
+            {
+                AppendLineToChatBox(e.ToString());
+            }
+
         }
 
         #endregion
