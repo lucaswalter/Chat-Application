@@ -147,7 +147,7 @@ namespace ClientChatApplication
         }
 
         /// <summary>
-        /// Message Callback Attached To BeginReceive From
+        /// Message Callback Attached To BeginReceiveFrom
         /// </summary>
         /// <param name="result"></param>
         private void MessageCallBack(IAsyncResult asyncResult)
