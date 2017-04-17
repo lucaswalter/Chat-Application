@@ -53,10 +53,8 @@ namespace ClientChatApplication
                 AppendLineToChatBox(e.ToString());
             }
 
-
             // Write Line To Chat Box
             AppendLineToChatBox("Successfull Connection To Server!");
-
 
         }
 
@@ -113,7 +111,6 @@ namespace ClientChatApplication
             {
                 AppendLineToChatBox(e.ToString());
             }
-
         }
 
         #endregion
