@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ClientChatApplication.Messages;
+using Newtonsoft.Json;
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -38,7 +40,7 @@ namespace ClientChatApplication
 
                 // Attempt Remote Connection
                 // TODO: Add Actual Server IP Address & Port
-                epRemote = new IPEndPoint(IPAddress.Parse(GetLocalIP()), Convert.ToInt32("3002"));
+                epRemote = new IPEndPoint(IPAddress.Parse(GetLocalIP()), Convert.ToInt32("3001"));
                 chatSocket.Connect(epRemote);
 
                 // Begin Listening To A Specific Port
@@ -75,6 +77,43 @@ namespace ClientChatApplication
                 }
             }
             return "127.0.0.1";
+        }
+
+        /// <summary>
+        /// Message Callback Attached To BeginReceiveFrom
+        /// </summary>
+        /// <param name="result"></param>
+        private void MessageCallBack(IAsyncResult asyncResult)
+        {
+            try
+            {
+                int size = chatSocket.EndReceiveFrom(asyncResult, ref epRemote);
+
+                // Check If Data Exists
+                if (size > 0)
+                {
+                    // Auxiliary Buffer
+                    byte[] aux = new byte[1500];
+
+                    // Retrieve Data
+                    aux = (byte[])asyncResult.AsyncState;
+
+                    // Converte Data To JSON String
+                    string jsonStr = Encoding.UTF8.GetString(aux);
+
+                    // TODO: Deserialize JSON & Handle Message
+
+                    // Start To Listen Again
+                    buffer = new byte[1500];
+                    chatSocket.BeginReceiveFrom(buffer, 0, buffer.Length, SocketFlags.None, ref epRemote, new AsyncCallback(MessageCallBack), buffer);
+
+                }
+            }
+            catch (Exception e)
+            {
+                AppendLineToChatBox(e.ToString());
+            }
+
         }
 
         #endregion
@@ -130,57 +169,47 @@ namespace ClientChatApplication
 
         #endregion
 
-
         #region Messaging
 
         /// <summary>
         /// Send our message.
         /// </summary>
-        // TODO: Implement Network Functionality
         private void SendMessage()
         {
             if (!string.IsNullOrEmpty(messageText.Text))
             {
-                AppendLineToChatBox(messageText.Text);
-                messageText.Clear();
-            }           
-        }
-
-        /// <summary>
-        /// Message Callback Attached To BeginReceiveFrom
-        /// </summary>
-        /// <param name="result"></param>
-        private void MessageCallBack(IAsyncResult asyncResult)
-        {
-            try
-            {
-                int size = chatSocket.EndReceiveFrom(asyncResult, ref epRemote);
-
-                // Check If Data Exists
-                if (size > 0)
+                try
                 {
-                    // Auxiliary Buffer
-                    byte[] aux = new byte[1500];
+                    // Create POCO Message
+                    Message message = new Message
+                    {
+                        Who = "Me",
+                        What = messageText.Text,
+                        When = DateTime.Now.ToShortTimeString(),
+                        Where = String.Empty, // TODO: Use Room ID
+                        Why = Protocol.PUBLIC_MESSAGE
+                    };
 
-                    // Retrieve Data
-                    aux = (byte[])asyncResult.AsyncState;
+                    // Serialize JSON Object
+                    string jsonMessage = JsonConvert.SerializeObject(message);
 
-                    // Converte Data To JSON String
-                    string jsonStr = Encoding.UTF8.GetString(aux);
+                    // Encode Into Byte Array
+                    var enc = new ASCIIEncoding();
+                    byte[] msg = new byte[1500];
+                    msg = enc.GetBytes(jsonMessage);
 
-                    // TODO: Deserialize JSON & Handle Message
+                    // Send The Message
+                    chatSocket.Send(msg);
 
-                    // Start To Listen Again
-                    buffer = new byte[1500];
-                    chatSocket.BeginReceiveFrom(buffer, 0, buffer.Length, SocketFlags.None, ref epRemote, new AsyncCallback(MessageCallBack), buffer);
-
+                    // TODO: Wait For Server Callback To Display Message
+                    AppendLineToChatBox("[" + message.When + "] " + message.Who + " : " + messageText.Text);
+                    messageText.Clear();
                 }
-            }
-            catch (Exception e)
-            {
-                AppendLineToChatBox(e.ToString());
-            }
-
+                catch (Exception e)
+                {
+                    AppendLineToChatBox(e.ToString());
+                }
+            }           
         }
 
         #endregion

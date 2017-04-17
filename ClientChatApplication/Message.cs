@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace ClientChatApplication.Messages
 {
-
     /// <summary>
     /// All messages will be of the structure {"who", "what","when", "where", "why"}
     /// </summary>
@@ -16,6 +15,6 @@ namespace ClientChatApplication.Messages
         public string What { get; set; }
         public string When { get; set; }
         public string Where { get; set; }
-        public string Why { get; set; }
+        public int Why { get; set; }
     }
 }
