@@ -54,7 +54,6 @@ namespace ClientChatApplication
             }
 
             // Write Line To Chat Box
-            AppendLineToChatBox("Successfull Connection To Server!");
 
         }
 
