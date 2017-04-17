@@ -15,6 +15,6 @@ namespace ClientChatApplication.Messages
         public string What { get; set; }
         public string When { get; set; }
         public string Where { get; set; }
-        public string Why { get; set; }
+        public int Why { get; set; }
     }
 }

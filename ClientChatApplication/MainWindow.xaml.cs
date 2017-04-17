@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ClientChatApplication.Messages;
+using Newtonsoft.Json;
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -38,7 +40,7 @@ namespace ClientChatApplication
 
                 // Attempt Remote Connection
                 // TODO: Add Actual Server IP Address & Port
-                epRemote = new IPEndPoint(IPAddress.Parse(GetLocalIP()), Convert.ToInt32("3002"));
+                epRemote = new IPEndPoint(IPAddress.Parse(GetLocalIP()), Convert.ToInt32("3001"));
                 chatSocket.Connect(epRemote);
 
                 // Begin Listening To A Specific Port
@@ -172,13 +174,41 @@ namespace ClientChatApplication
         /// <summary>
         /// Send our message.
         /// </summary>
-        // TODO: Implement Network Functionality
         private void SendMessage()
         {
             if (!string.IsNullOrEmpty(messageText.Text))
             {
-                AppendLineToChatBox(messageText.Text);
-                messageText.Clear();
+                try
+                {
+                    // Create POCO Message
+                    Message message = new Message
+                    {
+                        Who = "Me",
+                        What = messageText.Text,
+                        When = DateTime.Now.ToShortTimeString(),
+                        Where = String.Empty, // TODO: Use Room ID
+                        Why = Protocol.PUBLIC_MESSAGE
+                    };
+
+                    // Serialize JSON Object
+                    string jsonMessage = JsonConvert.SerializeObject(message);
+
+                    // Encode Into Byte Array
+                    var enc = new ASCIIEncoding();
+                    byte[] msg = new byte[1500];
+                    msg = enc.GetBytes(jsonMessage);
+
+                    // Send The Message
+                    chatSocket.Send(msg);
+
+                    // TODO: Wait For Server Callback To Display Message
+                    AppendLineToChatBox("[" + message.When + "] " + message.Who + " : " + messageText.Text);
+                    messageText.Clear();
+                }
+                catch (Exception e)
+                {
+                    AppendLineToChatBox(e.ToString());
+                }
             }           
         }
 
