@@ -77,6 +77,43 @@ namespace ClientChatApplication
             return "127.0.0.1";
         }
 
+        /// <summary>
+        /// Message Callback Attached To BeginReceiveFrom
+        /// </summary>
+        /// <param name="result"></param>
+        private void MessageCallBack(IAsyncResult asyncResult)
+        {
+            try
+            {
+                int size = chatSocket.EndReceiveFrom(asyncResult, ref epRemote);
+
+                // Check If Data Exists
+                if (size > 0)
+                {
+                    // Auxiliary Buffer
+                    byte[] aux = new byte[1500];
+
+                    // Retrieve Data
+                    aux = (byte[])asyncResult.AsyncState;
+
+                    // Converte Data To JSON String
+                    string jsonStr = Encoding.UTF8.GetString(aux);
+
+                    // TODO: Deserialize JSON & Handle Message
+
+                    // Start To Listen Again
+                    buffer = new byte[1500];
+                    chatSocket.BeginReceiveFrom(buffer, 0, buffer.Length, SocketFlags.None, ref epRemote, new AsyncCallback(MessageCallBack), buffer);
+
+                }
+            }
+            catch (Exception e)
+            {
+                AppendLineToChatBox(e.ToString());
+            }
+
+        }
+
         #endregion
 
         #region UI Methods
@@ -130,7 +167,6 @@ namespace ClientChatApplication
 
         #endregion
 
-
         #region Messaging
 
         /// <summary>
@@ -144,43 +180,6 @@ namespace ClientChatApplication
                 AppendLineToChatBox(messageText.Text);
                 messageText.Clear();
             }           
-        }
-
-        /// <summary>
-        /// Message Callback Attached To BeginReceiveFrom
-        /// </summary>
-        /// <param name="result"></param>
-        private void MessageCallBack(IAsyncResult asyncResult)
-        {
-            try
-            {
-                int size = chatSocket.EndReceiveFrom(asyncResult, ref epRemote);
-
-                // Check If Data Exists
-                if (size > 0)
-                {
-                    // Auxiliary Buffer
-                    byte[] aux = new byte[1500];
-
-                    // Retrieve Data
-                    aux = (byte[])asyncResult.AsyncState;
-
-                    // Converte Data To JSON String
-                    string jsonStr = Encoding.UTF8.GetString(aux);
-
-                    // TODO: Deserialize JSON & Handle Message
-
-                    // Start To Listen Again
-                    buffer = new byte[1500];
-                    chatSocket.BeginReceiveFrom(buffer, 0, buffer.Length, SocketFlags.None, ref epRemote, new AsyncCallback(MessageCallBack), buffer);
-
-                }
-            }
-            catch (Exception e)
-            {
-                AppendLineToChatBox(e.ToString());
-            }
-
         }
 
         #endregion
