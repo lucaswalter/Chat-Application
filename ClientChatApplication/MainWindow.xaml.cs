@@ -123,8 +123,8 @@ namespace ClientChatApplication
         /// <param name="message"></param>
         private void AppendLineToChatBox(string message)
         {
-            //To ensure we can successfully append to the text box from any thread
-            //we need to wrap the append within an invoke action.
+            // To ensure we can successfully append to the text box from any thread
+            // we need to wrap the append within an invoke action.
             chatBox.Dispatcher.BeginInvoke(new Action<string>((messageToAdd) =>
             {
                 chatBox.AppendText(messageToAdd + "\n");
@@ -154,14 +154,13 @@ namespace ClientChatApplication
         }
 
         /// <summary>
-        /// Correctly shutdown NetworkComms .Net when closing the WPF application
+        /// Correctly shutdown network communication when closing the WPF application
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            //Ensure we shutdown comms when we are finished
-            //TODO: Update when deciding upon final networking solution 
+            // TODO: Update when deciding upon final networking solution 
         }
 
         #endregion
