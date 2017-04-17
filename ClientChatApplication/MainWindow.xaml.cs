@@ -99,7 +99,7 @@ namespace ClientChatApplication
                     aux = (byte[])asyncResult.AsyncState;
 
                     // Converte Data To JSON String
-                    string jsonStr = Encoding.UTF8.GetString(aux);
+                    string jsonStr = Encoding.ASCII.GetString(aux);
 
                     // TODO: Deserialize JSON & Handle Message
 
