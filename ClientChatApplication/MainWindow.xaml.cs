@@ -1,5 +1,5 @@
-﻿using ClientChatApplication.Messages;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using Protocol;
 using System;
 using System.Net;
 using System.Net.Sockets;
@@ -185,7 +185,7 @@ namespace ClientChatApplication
                         What = messageText.Text,
                         When = DateTime.Now.ToShortTimeString(),
                         Where = String.Empty, // TODO: Use Room ID
-                        Why = Protocol.PUBLIC_MESSAGE
+                        Why = Protocol.Protocol.PUBLIC_MESSAGE
                     };
 
                     // Serialize JSON Object
