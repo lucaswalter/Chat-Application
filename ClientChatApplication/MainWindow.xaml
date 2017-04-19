@@ -18,7 +18,7 @@
 
     <Grid>
         <ListBox HorizontalAlignment="Left" Height="414" Margin="10,45,0,0" VerticalAlignment="Top" Width="179"/>
-        <Label Content="Friends List" HorizontalAlignment="Left" Margin="55,7,0,0" VerticalAlignment="Top" Width="90" FontSize="15" FontWeight="Bold"/>
+        <Label Content="Public Rooms" HorizontalAlignment="Left" Margin="50,3,0,0" VerticalAlignment="Top" Width="106" FontSize="15" FontWeight="Bold"/>
         <GridSplitter HorizontalAlignment="Left" Height="471" Margin="194,0,0,0" VerticalAlignment="Top" Width="2"/>
         <TextBox x:Name="chatBox" HorizontalAlignment="Left" Height="410" Margin="201,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="683" IsReadOnly="True" VerticalScrollBarVisibility="Visible"/>
         <TextBox x:Name="messageText" HorizontalAlignment="Left" Height="23" Margin="201,433,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="584" KeyUp="MessageText_KeyUp"/>
