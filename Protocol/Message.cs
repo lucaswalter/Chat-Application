@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ClientChatApplication.Messages
+namespace Protocol
 {
     /// <summary>
     /// All messages will be of the structure {"who", "what","when", "where", "why"}
