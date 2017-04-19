@@ -25,7 +25,13 @@ namespace ClientChatApplication
         public MainWindow()
         {
             InitializeComponent();
+            InitializeServerConnection();
+        }
 
+        #region Networking
+
+        private void InitializeServerConnection()
+        {
             try
             {
                 // Setup Socket
@@ -46,18 +52,13 @@ namespace ClientChatApplication
                 // Begin Listening To A Specific Port
                 buffer = new byte[1500];
                 chatSocket.BeginReceiveFrom(buffer, 0, buffer.Length, SocketFlags.None, ref epRemote, new AsyncCallback(MessageCallBack), buffer);
-                
+
             }
             catch (Exception e)
             {
                 AppendLineToChatBox(e.ToString());
             }
-
-            // Write Line To Chat Box
-
         }
-
-        #region Networking
 
         /// <summary>
         /// Return Your Own IP Address
@@ -74,46 +75,7 @@ namespace ClientChatApplication
                 }
             }
             return "127.0.0.1";
-        }
-
-        /// <summary>
-        /// Message Callback Attached To BeginReceiveFrom
-        /// </summary>
-        /// <param name="result"></param>
-        private void MessageCallBack(IAsyncResult asyncResult)
-        {
-            try
-            {
-                int size = chatSocket.EndReceiveFrom(asyncResult, ref epRemote);
-
-                // Check If Data Exists
-                if (size > 0)
-                {
-                    // Auxiliary Buffer
-                    byte[] aux = new byte[1500];
-
-                    // Retrieve Data
-                    aux = (byte[])asyncResult.AsyncState;
-
-                    // Decode Byte Array
-                    string jsonStr = Encoding.ASCII.GetString(aux);
-
-                    // Deserialize JSON & Handle Message
-                    Message message = JsonConvert.DeserializeObject<Message>(jsonStr);
-
-                    // TODO: Handle Messange Action
-
-                    // Start To Listen Again
-                    buffer = new byte[1500];
-                    chatSocket.BeginReceiveFrom(buffer, 0, buffer.Length, SocketFlags.None, ref epRemote, new AsyncCallback(MessageCallBack), buffer);
-
-                }
-            }
-            catch (Exception e)
-            {
-                AppendLineToChatBox(e.ToString());
-            }
-        }
+        }  
 
         #endregion
 
@@ -208,6 +170,45 @@ namespace ClientChatApplication
                     AppendLineToChatBox(e.ToString());
                 }
             }           
+        }
+
+        /// <summary>
+        /// Message Callback Attached To BeginReceiveFrom
+        /// </summary>
+        /// <param name="result"></param>
+        private void MessageCallBack(IAsyncResult asyncResult)
+        {
+            try
+            {
+                int size = chatSocket.EndReceiveFrom(asyncResult, ref epRemote);
+
+                // Check If Data Exists
+                if (size > 0)
+                {
+                    // Auxiliary Buffer
+                    byte[] aux = new byte[1500];
+
+                    // Retrieve Data
+                    aux = (byte[])asyncResult.AsyncState;
+
+                    // Decode Byte Array
+                    string jsonStr = Encoding.ASCII.GetString(aux);
+
+                    // Deserialize JSON & Handle Message
+                    Message message = JsonConvert.DeserializeObject<Message>(jsonStr);
+
+                    // TODO: Handle Messange Action
+
+                    // Start To Listen Again
+                    buffer = new byte[1500];
+                    chatSocket.BeginReceiveFrom(buffer, 0, buffer.Length, SocketFlags.None, ref epRemote, new AsyncCallback(MessageCallBack), buffer);
+
+                }
+            }
+            catch (Exception e)
+            {
+                AppendLineToChatBox(e.ToString());
+            }
         }
 
         #endregion
