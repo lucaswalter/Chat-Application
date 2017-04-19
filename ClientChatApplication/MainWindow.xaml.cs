@@ -26,6 +26,7 @@ namespace ClientChatApplication
         {
             InitializeComponent();
             InitializeServerConnection();
+            JoinDefaultRoom();
         }
 
         #region Networking
@@ -58,6 +59,12 @@ namespace ClientChatApplication
             {
                 AppendLineToChatBox(e.ToString());
             }
+        }
+
+        // TODO
+        private void JoinDefaultRoom()
+        {
+
         }
 
         /// <summary>
@@ -103,7 +110,7 @@ namespace ClientChatApplication
         /// <param name="e"></param>
         private void SendMessageButton_Click(object sender, RoutedEventArgs e)
         {
-            SendMessage();
+            SendChatMessage();
         }
 
         /// <summary>
@@ -114,7 +121,7 @@ namespace ClientChatApplication
         private void MessageText_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter || e.Key == Key.Return)
-                SendMessage();
+                SendChatMessage();
         }
 
         /// <summary>
@@ -134,7 +141,7 @@ namespace ClientChatApplication
         /// <summary>
         /// Send our message.
         /// </summary>
-        private void SendMessage()
+        private void SendChatMessage()
         {
             if (!string.IsNullOrEmpty(messageText.Text))
             {
@@ -146,7 +153,7 @@ namespace ClientChatApplication
                         Who = "Me",
                         What = messageText.Text,
                         When = DateTime.Now.ToShortTimeString(),
-                        Where = String.Empty, // TODO: Use Room ID
+                        Where = "0", // Default Chat Room
                         Why = Protocol.Protocol.PUBLIC_MESSAGE
                     };
 
