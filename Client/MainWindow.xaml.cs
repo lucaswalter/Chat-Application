@@ -7,7 +7,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Input;
 
-namespace ClientChatApplication
+namespace Client
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
