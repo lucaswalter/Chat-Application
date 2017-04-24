@@ -47,11 +47,6 @@ namespace Server
             InitializeComponent();
             InitializeServerConnection();
         }
-
-        #endregion
-
-        #region Events
-
         private void InitializeServerConnection()
         {
             try
@@ -80,12 +75,12 @@ namespace Server
                 // Start listening for incoming data
                 serverSocket.BeginReceiveFrom(this.dataStream, 0, this.dataStream.Length, SocketFlags.None, ref epSender, new AsyncCallback(ReceiveData), epSender);
 
-                lblStatus.Content = "Listening";
+                ServerComTextBox.Text = "Listening" + "\n";
             }
             catch (Exception ex)
             {
-                lblStatus.Content = "Error";
-                MessageBox.Show("Load Error: " + ex.Message, "UDP Server");
+                ServerComTextBox.Text = "Error" + "\n";
+                MessageBox.Show("Load Error: " + ex.Message, "Time4aChat Server Command Center Error");
             }
         }
 
@@ -141,7 +136,7 @@ namespace Server
             }
             catch (Exception ex)
             {
-                MessageBox.Show("SendData Error: " + ex.Message, "UDP Server");
+                MessageBox.Show("SendData Error: " + ex.Message, "Time4aChat Server Command Center Error");
             }
         }
 
@@ -274,7 +269,7 @@ namespace Server
             }
             catch (Exception ex)
             {
-                MessageBox.Show("ReceiveData Error: " + ex.Message + "\n++++++++++\n" + ex.StackTrace, "UDP Server");
+                MessageBox.Show("ReceiveData Error: " + ex.Message + "\n++++++++++\n" + ex.StackTrace, "Time4aChat Server Command Center Error");
             }
         }
 
@@ -284,10 +279,31 @@ namespace Server
 
         private void UpdateStatus(string status)
         {
-            txtStatus.Text += status + Environment.NewLine;
-            txtStatus.ScrollToEnd();
+            RoomViewTextBox.Text += status + Environment.NewLine;
+            RoomViewTextBox.ScrollToEnd();
+            UserOnlineTextBox.Clear();
+
+            foreach (Client client in this.clientList)
+            {
+                UserOnlineTextBox.Text += client.name;
+                UserOnlineTextBox.Text += "\n";
+            }
         }
 
         #endregion
+        private void Command_Button(object sender, RoutedEventArgs e)
+        {
+            if(!String.IsNullOrEmpty(ServerCommInput.Text))
+            {
+                ServerComTextBox.Text += ServerCommInput.Text + "\n";
+                ServerCommInput.Clear();
+            }
+             
+        }
+        private void Room_Button(object sender, RoutedEventArgs e)
+        {
+            //Will update Room_Box with the different inputs
+            MessageBox.Show("Room_Button works!");
+        }
     }
 }
