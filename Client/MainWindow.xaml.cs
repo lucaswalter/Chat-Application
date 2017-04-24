@@ -59,7 +59,7 @@ namespace Client
                 // TODO: Change To recieve input from upcoming text box
                 // WORKAROUND: VPN to school network (or be on mst computer)
                 //             and visit icanhazip.com in a browser and copy IP address here before building
-                IPAddress serverIP = IPAddress.Parse("131.151.89.23");
+                // IPAddress serverIP = IPAddress.Parse("131.151.89.23");
                 */
 
                 // Initialize the IPEndPoint for the server and use port 30000
@@ -67,10 +67,6 @@ namespace Client
 
                 // Initialize the EndPoint for the server
                 epServer = (EndPoint)server;
-
-                // Connect to the server
-                //this.clientSocket.Connect(epServer);
-                //^^ Not necessary
 
                 // Initialize Login Message
 
@@ -87,7 +83,6 @@ namespace Client
 
                 // Send The Message
                 clientSocket.BeginSendTo(msg, 0, msg.Length, SocketFlags.None, epServer, new AsyncCallback(this.SendData), null);
-
 
                 // Initialize data stream
                 this.dataStream = new byte[1024];
