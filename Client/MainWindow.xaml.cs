@@ -7,7 +7,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Input;
 
-namespace ClientChatApplication
+namespace Client
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -34,6 +34,10 @@ namespace ClientChatApplication
         // Data stream
         private byte[] dataStream = new byte[1024];
 
+        // Display Message Delegate
+        private delegate void DisplayMessageDelegate(string message);
+        private DisplayMessageDelegate displayMessageDelegate = null;
+
         #endregion
 
         #region Networking
@@ -42,6 +46,9 @@ namespace ClientChatApplication
         {
             try
             {
+                // Initialize Delegate
+                this.displayMessageDelegate = new DisplayMessageDelegate(this.AppendLineToChatBox);
+
                 // Initialise socket
                 this.clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
@@ -105,6 +112,9 @@ namespace ClientChatApplication
                     Message message = JsonConvert.DeserializeObject<Message>(jsonStr);
 
                     // TODO: Handle Messange
+                    // Update Message Box Through Delegate
+                    if (!string.IsNullOrEmpty(message.What))
+                        Dispatcher.Invoke(this.displayMessageDelegate, new object[] { message.What });
 
                     // Reset data stream
                     this.dataStream = new byte[1500];
@@ -222,7 +232,7 @@ namespace ClientChatApplication
                     clientSocket.BeginSendTo(msg, 0, msg.Length, SocketFlags.None, epServer, new AsyncCallback(this.SendData), null);
 
                     // TODO: Wait For Server Callback To Display Message
-                    AppendLineToChatBox("[" + message.When + "] " + message.Who + " : " + messageText.Text);
+                    //AppendLineToChatBox("[" + message.When + "] " + message.Who + " : " + messageText.Text);
                     messageText.Clear();
                 }
                 catch (Exception e)
