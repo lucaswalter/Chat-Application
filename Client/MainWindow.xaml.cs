@@ -64,6 +64,23 @@ namespace Client
 
                 // Connect to the server
                 this.clientSocket.Connect(epServer);
+                
+                // TODO: Have a UI for inputting login info
+                // WORKAROUND: Initialize Username to "Me"
+                // Create Login Message
+                Message login = new Message();
+                login.Who = "Me";
+                login.Why = 200;
+
+                string jsonMessage = JsonConvert.SerializeObject(login);
+
+                // Encode Into Byte Array
+                var enc = new ASCIIEncoding();
+                byte[] msg = new byte[1500];
+                msg = enc.GetBytes(jsonMessage);
+
+                // Send The Message
+                clientSocket.BeginSendTo(msg, 0, msg.Length, SocketFlags.None, epServer, new AsyncCallback(this.SendData), null);
 
                 // Initialize data stream
                 this.dataStream = new byte[1024];
