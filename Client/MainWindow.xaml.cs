@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using Protocol;
 using System;
 using System.Net;
@@ -55,6 +55,12 @@ namespace Client
                 // Initialize server IP
                 // TODO: Change To Server IP
                 IPAddress serverIP = IPAddress.Parse(GetLocalIP());
+                /*
+                // TODO: Change To recieve input from upcoming text box
+                // WORKAROUND: VPN to school network (or be on mst computer)
+                //             and visit icanhazip.com in a browser and copy IP address here before building
+                // IPAddress serverIP = IPAddress.Parse("131.151.89.23");
+                */
 
                 // Initialize the IPEndPoint for the server and use port 30000
                 IPEndPoint server = new IPEndPoint(serverIP, 30000);
@@ -62,8 +68,21 @@ namespace Client
                 // Initialize the EndPoint for the server
                 epServer = (EndPoint)server;
 
-                // Connect to the server
-                this.clientSocket.Connect(epServer);
+                // Initialize Login Message
+
+                Message login = new Message();
+                login.Who = "Me";
+                login.Why = 200;
+
+                string jsonMessage = JsonConvert.SerializeObject(login);
+
+                // Encode Into Byte Array
+                var enc = new ASCIIEncoding();
+                byte[] msg = new byte[1500];
+                msg = enc.GetBytes(jsonMessage);
+
+                // Send The Message
+                clientSocket.BeginSendTo(msg, 0, msg.Length, SocketFlags.None, epServer, new AsyncCallback(this.SendData), null);
 
                 // Initialize data stream
                 this.dataStream = new byte[1024];
@@ -74,7 +93,7 @@ namespace Client
             }
             catch (Exception e)
             {
-                AppendLineToChatBox(e.ToString());
+                MessageBox.Show(e.ToString());
             }
         }
 
@@ -86,7 +105,7 @@ namespace Client
             }
             catch (Exception e)
             {
-                AppendLineToChatBox(e.ToString());
+                MessageBox.Show(e.ToString());
             }
         }
 
@@ -103,7 +122,7 @@ namespace Client
                     byte[] aux = new byte[1500];
 
                     // Retrieve Data
-                    aux = (byte[])ar.AsyncState;
+                    aux = (byte[])dataStream;
 
                     // Decode Byte Array
                     string jsonStr = Encoding.ASCII.GetString(aux);
@@ -114,7 +133,7 @@ namespace Client
                     // TODO: Handle Messange
                     // Update Message Box Through Delegate
                     if (!string.IsNullOrEmpty(message.What))
-                        Dispatcher.Invoke(this.displayMessageDelegate, new object[] { message.What });
+                        this.Dispatcher.Invoke(this.displayMessageDelegate, new object[] { "[" + message.When + "] " + message.Who + " : " + message.What });
 
                     // Reset data stream
                     this.dataStream = new byte[1500];
@@ -126,7 +145,7 @@ namespace Client
             catch (ObjectDisposedException) { }
             catch (Exception e)
             {
-                AppendLineToChatBox(e.ToString());
+                MessageBox.Show(e.ToString());
             }
         }
 
@@ -159,11 +178,16 @@ namespace Client
         {
             // To ensure we can successfully append to the text box from any thread
             // we need to wrap the append within an invoke action.
-            chatBox.Dispatcher.BeginInvoke(new Action<string>((messageToAdd) =>
+
+            try
             {
-                chatBox.AppendText(messageToAdd + "\n");
+                chatBox.AppendText(message + "\n");
                 chatBox.ScrollToEnd();
-            }), new object[] { message });
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString());
+            }
         }
 
         /// <summary>
@@ -194,7 +218,40 @@ namespace Client
         /// <param name="e"></param>
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            // TODO: Update when deciding upon final networking solution 
+            // TODO: Update when deciding upon final networking solution
+            try
+            {
+                if(this.clientSocket != null)
+                {
+                    // InitializeComponent a new message for logoff
+                    Message sendData = new Message
+                    {
+                        Who = "Me",
+                        What = "",
+                        When = DateTime.Now.ToShortTimeString(),
+                        Where = "0", // Default Chat Room
+                        Why = Protocol.Protocol.LEAVE_ROOM
+                    };
+
+                    string jsonMessage = JsonConvert.SerializeObject(sendData);
+
+                    // Encode Into Byte Array
+                    var enc = new ASCIIEncoding();
+                    byte[] msg = new byte[1500];
+                    msg = enc.GetBytes(jsonMessage);
+
+                    // Send message to server
+                    this.clientSocket.SendTo(msg, 0, msg.Length, SocketFlags.None, epServer);
+
+                    // Close the socket
+                    this.clientSocket.Close();
+
+                }
+            } 
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
         }
 
         #endregion
@@ -237,7 +294,7 @@ namespace Client
                 }
                 catch (Exception e)
                 {
-                    AppendLineToChatBox(e.ToString());
+                    MessageBox.Show(e.ToString());
                 }
             }           
         }
