@@ -1,4 +1,4 @@
-﻿namespace Protocol
+namespace Protocol
 {
     public static class Protocol
     {
@@ -12,12 +12,16 @@
         public const int GLOBAL_INFO_MESSAGE = 110;
         public const int GLOBAL_WARNING_MESSAGE = 111;
 
+
         // User Actions
         public const int CREATE_ACCOUNT = 200;
         public const int ADD_FRIEND = 201;
         public const int REMOVE_FRIEND = 202;
         public const int BLOCK_USER = 203;
         public const int UNBLOCK_USER = 204;
+        public const int LOGIN = 205;
+        public const int LOGOUT = 206;
+        public const int USEREXIT = 207;
 
         public const int RETRIEVE_FRIENDS = 210;
         public const int RETRIEVE_BLOCKED_USERS = 211;
@@ -28,7 +32,9 @@
         public const int CREATE_PRIVATE_ROOM = 301;
 
         // {"null", "null", "timestamp", "null", "protocol"}
-        public static int RETRIEVE_PUBLIC_ROOMS = 302;
+        // Who: id1,id2,...
+        // What: header1, header2,...
+        public const int SEND_PUBLIC_ROOMS = 302;
 
         public const int INVITE_USER_TO_ROOM = 310;
         public const int KICK_USER_FROM_ROOM = 311;
