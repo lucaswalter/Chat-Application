@@ -252,6 +252,8 @@ namespace Client
             {
                 MessageBox.Show(ex.ToString());
             }
+
+            Application.Current.Shutdown();
         }
 
         #endregion
