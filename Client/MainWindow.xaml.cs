@@ -20,8 +20,8 @@ namespace Client
         public MainWindow(string userName)
         {
             InitializeComponent();
-            InitializeServerConnection();
             UserName = userName;
+            InitializeServerConnection();
         }
 
         #region Private Members
@@ -226,7 +226,7 @@ namespace Client
                     // InitializeComponent a new message for logoff
                     Message sendData = new Message
                     {
-                        Who = "Me",
+                        Who = UserName,
                         What = "",
                         When = DateTime.Now.ToShortTimeString(),
                         Where = 0, // Default Chat Room
