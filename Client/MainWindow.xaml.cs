@@ -230,7 +230,7 @@ namespace Client
                         What = "",
                         When = DateTime.Now.ToShortTimeString(),
                         Where = "0", // Default Chat Room
-                        Why = Protocol.Protocol.LEAVE_ROOM
+                        Why = Protocol.Protocol.USEREXIT
                     };
 
                     string jsonMessage = JsonConvert.SerializeObject(sendData);
