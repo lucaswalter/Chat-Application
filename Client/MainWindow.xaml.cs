@@ -15,12 +15,13 @@ namespace Client
     public partial class MainWindow
     {
 
-        public MainWindow()
+        public string UserName;
+
+        public MainWindow(string userName)
         {
             InitializeComponent();
             InitializeServerConnection();
-            // TODO: Join Default Room
-            //JoinDefaultRoom();
+            UserName = userName;
         }
 
         #region Private Members
@@ -69,9 +70,8 @@ namespace Client
                 epServer = (EndPoint)server;
 
                 // Initialize Login Message
-
                 Message login = new Message();
-                login.Who = "Me";
+                login.Who = UserName;
                 login.Why = 200;
 
                 string jsonMessage = JsonConvert.SerializeObject(login);
@@ -252,6 +252,8 @@ namespace Client
             {
                 MessageBox.Show(ex.ToString());
             }
+
+            Application.Current.Shutdown();
         }
 
         #endregion
@@ -270,7 +272,7 @@ namespace Client
                     // Create POCO Message
                     Message message = new Message
                     {
-                        Who = "Me",
+                        Who = UserName,
                         What = messageText.Text,
                         When = DateTime.Now.ToShortTimeString(),
                         Where = 0, // Default Chat Room
