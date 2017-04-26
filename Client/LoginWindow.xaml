@@ -9,8 +9,12 @@
     mc:Ignorable="d"
     Title="Chat Client | Login" Height="500" Width="350"
     ResizeMode="NoResize">
-    
+
     <Grid>
-        
+        <Label Content="Welcome To The Chat!" HorizontalAlignment="Left" Margin="60,129,0,0" VerticalAlignment="Top" Height="40" Width="233" FontSize="22"/>
+        <Label Content="Enter Your User Name To Continue..." HorizontalAlignment="Left" Margin="60,169,0,0" VerticalAlignment="Top" Height="30" Width="233" FontSize="14"/>
+        <TextBox x:Name="loginTextBox" HorizontalAlignment="Left" Height="40" Margin="71,216,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="206" FontSize="18"/>
+        <Button Content="Login" HorizontalAlignment="Left" Margin="71,264,0,0" VerticalAlignment="Top" Width="206" Height="50" RenderTransformOrigin="0.502,2.522" FontSize="18"/>
+
     </Grid>
 </Controls:MetroWindow>
