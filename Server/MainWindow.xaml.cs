@@ -143,7 +143,7 @@ namespace Server
                     Who = "SERVER",
                     What = "--- !!! SERVER IS SHUTTING DOWN !!! ---",
                     When = DateTime.Now.ToShortTimeString(),
-                    Where = "0", // Default Chat Room
+                    Where = 0, // Default Chat Room
                     Why = Protocol.Protocol.GLOBAL_WARNING_MESSAGE
                 };
 
@@ -261,7 +261,7 @@ namespace Server
                             this.clientList.Add(client);
                             roomList[0].clients.Add(client);
 
-                            sending.Where = "0";
+                            sending.Where = 0;
                             sending.What = string.Format("-- {0} is online --", message.Who);
                             sending.Why = 100;
                             break;
@@ -310,7 +310,7 @@ namespace Server
                                 }
                             }
                             sending.What = string.Format("-- {0} has gone offline --", message.Who);
-                            sending.Where = "0";
+                            sending.Where = 0;
                             sending.Why = 100;
                             break;
 
@@ -385,7 +385,7 @@ namespace Server
                     // Clients will recieve the message if...
                     foreach(Room r in roomList)
                     {
-                        if (sending.Where==r.id.ToString())
+                        if (sending.Where==r.id)
                         {
                             foreach(Client client in r.clients)  // ...the client is in the list of clients able to view the room being sent to
                             {
@@ -436,7 +436,7 @@ namespace Server
 
             foreach (Room r in roomList)
             {
-                if (r.id.ToString() == message.Where)
+                if ( message.Where == r.id)
                 {
                     r.txtbox.Text += formattedText + Environment.NewLine;
                     r.txtbox.ScrollToEnd();
@@ -483,8 +483,6 @@ namespace Server
         
         private void AddRoom(string header)
         {
-            int count = roomList.Count;
-
             Room room = new Room();
 
             room.tab = new TabItem();
