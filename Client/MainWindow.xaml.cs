@@ -229,7 +229,7 @@ namespace Client
                         Who = "Me",
                         What = "",
                         When = DateTime.Now.ToShortTimeString(),
-                        Where = "0", // Default Chat Room
+                        Where = 0, // Default Chat Room
                         Why = Protocol.Protocol.USEREXIT
                     };
 
@@ -273,7 +273,7 @@ namespace Client
                         Who = "Me",
                         What = messageText.Text,
                         When = DateTime.Now.ToShortTimeString(),
-                        Where = "0", // Default Chat Room
+                        Where = 0, // Default Chat Room
                         Why = Protocol.Protocol.PUBLIC_MESSAGE
                     };
 
