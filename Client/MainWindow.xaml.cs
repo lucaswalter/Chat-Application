@@ -229,8 +229,8 @@ namespace Client
                         Who = "Me",
                         What = "",
                         When = DateTime.Now.ToShortTimeString(),
-                        Where = "0", // Default Chat Room
-                        Why = Protocol.Protocol.LEAVE_ROOM
+                        Where = 0, // Default Chat Room
+                        Why = Protocol.Protocol.USEREXIT
                     };
 
                     string jsonMessage = JsonConvert.SerializeObject(sendData);
@@ -273,7 +273,7 @@ namespace Client
                         Who = "Me",
                         What = messageText.Text,
                         When = DateTime.Now.ToShortTimeString(),
-                        Where = "0", // Default Chat Room
+                        Where = 0, // Default Chat Room
                         Why = Protocol.Protocol.PUBLIC_MESSAGE
                     };
 

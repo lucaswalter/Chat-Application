@@ -14,7 +14,7 @@ namespace Protocol
         public string Who { get; set; }
         public string What { get; set; }
         public string When { get; set; }
-        public string Where { get; set; }
+        public int Where { get; set; }
         public int Why { get; set; }
     }
 }
