@@ -43,7 +43,7 @@ namespace Client
         private byte[] dataStream = new byte[1024];
 
         // Display Message Delegate
-        private delegate void DisplayMessageDelegate(string message);
+        private delegate void DisplayMessageDelegate(string message, int roomId);
         private DisplayMessageDelegate displayMessageDelegate = null;
 
         #endregion
@@ -140,7 +140,7 @@ namespace Client
                     // TODO: Handle Messange
                     // Update Message Box Through Delegate
                     if (!string.IsNullOrEmpty(message.What))
-                        this.Dispatcher.Invoke(this.displayMessageDelegate, new object[] { "[" + message.When + "] " + message.Who + " : " + message.What });
+                        this.Dispatcher.Invoke(this.displayMessageDelegate, new object[] { "[" + message.When + "] " + message.Who + " : " + message.What, message.Where });
 
                     // Reset data stream
                     this.dataStream = new byte[1500];
@@ -171,7 +171,17 @@ namespace Client
                 }
             }
             return "127.0.0.1";
-        }  
+        }
+
+        // Returns The Currently Selected Room
+        private Room GetCurrentRoom()
+        {
+            var currenTabItem = tabControl.SelectedItem as TabItem;
+            string header = currenTabItem.Header.ToString();
+
+            var currentRoom = roomList.Find(x => x.Header == header);
+            return currentRoom;
+        }
 
         #endregion
 
@@ -181,15 +191,18 @@ namespace Client
         /// Append the provided message to the chatBox text box.
         /// </summary>
         /// <param name="message"></param>
-        private void AppendLineToChatBox(string message)
+        private void AppendLineToChatBox(string message, int roomId)
         {
             // To ensure we can successfully append to the text box from any thread
             // we need to wrap the append within an invoke action.
 
             try
             {
-                var tabItem = tabControl.SelectedItem as TabItem;
+                // Append Message To TextBox
+                var room = roomList.Find(x => x.Id == roomId);
+                var tabItem = room.Tab;
                 TextBox chatBox = (TextBox)tabItem.Content;
+
                 chatBox.AppendText(message + "\n");
                 chatBox.ScrollToEnd();
             }
@@ -318,7 +331,7 @@ namespace Client
                         Who = UserName,
                         What = messageText.Text,
                         When = DateTime.Now.ToShortTimeString(),
-                        Where = 0, // Default Chat Room
+                        Where = GetCurrentRoom().Id, // Default Chat Room
                         Why = Protocol.Protocol.PUBLIC_MESSAGE
                     };
 
@@ -334,7 +347,7 @@ namespace Client
                     clientSocket.BeginSendTo(msg, 0, msg.Length, SocketFlags.None, epServer, new AsyncCallback(this.SendData), null);
 
                     // TODO: Wait For Server Callback To Display Message
-                    AppendLineToChatBox("[" + message.When + "] " + message.Who + " : " + messageText.Text);
+                    //AppendLineToChatBox("[" + message.When + "] " + message.Who + " : " + messageText.Text);
                     messageText.Clear();
                 }
                 catch (Exception e)
