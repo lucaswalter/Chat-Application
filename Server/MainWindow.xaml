@@ -7,7 +7,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Server"
         mc:Ignorable="d"
-        Title="Time4aChat Command Center" Height="350" Width="525"
+        Title="Time4aChat Command Center" Height="450" Width="625" ResizeMode="NoResize"
         Closing="Window_Closing" Foreground="#FFFFF9F9" Background="#FF3CA3EA">
 
     <Grid>
@@ -16,8 +16,8 @@
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="2*"/>
-            <ColumnDefinition Width=".5*"/>
             <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width=".5*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height ="1*"/>
@@ -38,53 +38,43 @@
 
         <!--- This will display the users online in this TextBlock -->
         <TextBox Name="UserOnlineTextBox" Grid.Row="1" Grid.Column="0" Margin="5,0" Grid.RowSpan="3"
-                 HorizontalAlignment="Stretch" Text="" IsReadOnly="True" Background="#FFC7D4F0"/>
+                 HorizontalAlignment="Stretch" Text="" IsReadOnly="True" Background="#FFC7D4F0"
+                 ScrollViewer.VerticalScrollBarVisibility="Auto"
+                 ScrollViewer.HorizontalScrollBarVisibility="Auto"
+        />
 
+        
         <!--- Room Viewer Area-->
         <!--- This will allow the user to select a active room and see the messages on the chat-->
         <!--- This creates the border of the "Room Viewer" area and puts the label in the left most column -->
-        <Border Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" Grid.ColumnSpan="3"
+        <Border Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" Grid.ColumnSpan="4"
                 BorderBrush="WhiteSmoke" BorderThickness="2"
                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-        <TextBlock Text="Room Viewer" Grid.Row="0" Grid.Column="1" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Margin="5,0,1,17"/>
+        <TextBlock Text="Room Viewer" Grid.Row="0" Grid.Column="2" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Margin="5,0,1,17"/>
         <!--- This is where the latest messages from the selected chat will display-->
 
-        <!--- Available Rooms Area -->
-        <!--- This will display what rooms are currently active -->
-        <!--- This creates the border of the "Available Rooms" area and puts the label on top -->
-        <Border Grid.Row="0" Grid.Column="4" Grid.RowSpan="5"
-                BorderBrush="WhiteSmoke" BorderThickness="2"
-                HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-        </Border>
-        <TextBlock Text="Open Rooms" Grid.Row="0" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"/>
-        <!--- This is where the active chats will be displayed -->
-        <TextBox Name="AvalRoomsTextBox" Grid.Row="1" Grid.Column="4" Margin="5,0" Grid.RowSpan="3"
-                 HorizontalAlignment="Stretch" Text="" IsReadOnly="True" Background="#FFC7D4F0"/>
-        <!--- This button will submit the room request -->
-        <!--- This ComboList will list all of the rooms available-->
-        <!--- May change this so the user can select the room from the "Available Rooms" Tab -->
-
+        
         <!--- Server Command Center Area-->
         <!--- This will display where the user can issue commands from the server,  -->
         <!--- and see previous commands and what the commands did-->
         <!--- This creates the border of the "Server Command Center" area and puts the label on top -->
-        <Border Grid.Row="3" Grid.Column="1" Grid.RowSpan="2" Grid.ColumnSpan="3"
+        <Border Grid.Row="3" Grid.Column="1" Grid.RowSpan="2" Grid.ColumnSpan="4"
                 BorderBrush="WhiteSmoke" BorderThickness="2"
                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         </Border>
-        <TextBlock Text="Server Command Center" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Top" FontWeight="Bold" FontSize="16" Margin="70,5,22,0" Width="190"/>
+        <TextBlock Text="Server Command Center" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Center" VerticalAlignment="Top" FontWeight="Bold" FontSize="16" Margin="70,5,22,0" Width="190"/>
         <TextBlock Grid.Row="4" Grid.Column="1" Margin="5,5" 
                    HorizontalAlignment="Center" Text="Command: " VerticalAlignment="Center" FontWeight="Bold" />
         <!--- This is the TextBox that the user types commands into -->
-        <TextBox x:Name="ServerCommInput" Grid.Row="4" Grid.Column="2" Margin="0,5" Grid.RowSpan="3"
+        <TextBox x:Name="ServerCommInput" Grid.Row="4" Grid.Column="2" Margin="0,5" Grid.ColumnSpan="2"
                  HorizontalAlignment="Stretch" Text=""/>
         <!--- This button will submit the command -->
-        <Button x:Name="ServerCommButton" Grid.Row="4" Grid.Column="3" Margin="5,5" FontSize="10"
+        <Button x:Name="ServerCommButton" Grid.Row="4" Grid.Column="4" Margin="5,5" FontSize="10"
             Content="Send" Click="Command_Button" Width="30"/>
         <!--- This is where the past commands/what the commands do will show-->
-        <TextBox x:Name="ServerComTextBox" Grid.Row="3" Grid.Column="1" Margin="5,34,5,0" Grid.ColumnSpan="3"
+        <TextBox x:Name="ServerComTextBox" Grid.Row="3" Grid.Column="1" Margin="5,34,5,0" Grid.ColumnSpan="4"
                    Text="" IsReadOnly="True" Background="#FFC7D4F0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"/>
-        <TabControl x:Name="tabCtrl" Grid.RowSpan="3" Grid.Column="1" Margin="5,18,6,5" Grid.ColumnSpan="3" Background="WhiteSmoke" SelectionChanged="tabCtrl_SelectionChanged">
+        <TabControl x:Name="tabCtrl" Grid.RowSpan="3" Grid.Column="1" Margin="5,18,6,5" Grid.ColumnSpan="4" Background="WhiteSmoke" SelectionChanged="tabCtrl_SelectionChanged">
             <TabControl.Resources>
                 <Style TargetType="TabControl">
                     <Setter Property="Template">
@@ -104,7 +94,7 @@
                                                     Margin="2,2,2,0"
                                                     IsItemsHost="true"/>
                                     </ScrollViewer>
-                                    <ContentPresenter ContentSource="SelectedContent" Grid.Row="1"/>
+                                    <ContentPresenter ContentSource="SelectedContent" Grid.Row="1" Grid.ColumnSpan="3"/>
                                 </Grid>
                             </ControlTemplate>
                         </Setter.Value>
@@ -118,12 +108,12 @@
                 </Style>
             </TabControl.Resources>
         </TabControl>
-        <Button x:Name="btnNewRoom" Grid.Column="2" Margin="0,2,5,0" FontSize="10"
+        <Button x:Name="btnNewRoom" Grid.Column="3" Margin="0,2,5,0" FontSize="10"
             Content="Add Room" Click="btnNewRoom_Click" Grid.ColumnSpan="2" HorizontalAlignment="Right" Width="53" Height="16" VerticalAlignment="Top"/>
-        <Button x:Name="btnDeleteRoom" Grid.Column="2" Margin="0,2,16,0" FontSize="10"
+        <Button x:Name="btnDeleteRoom" Grid.Column="3" Margin="0,2,16,0" FontSize="10"
             Content="Delete Room" Click="btnDeleteRoom_Click" HorizontalAlignment="Right" Width="62" Height="16" VerticalAlignment="Top"/>
-        <Button x:Name="btntestroom" Grid.Column="2" Margin="0,2,78,0" FontSize="10"
-            Content="test" Click="btntestroom_Click" HorizontalAlignment="Right" Width="62" Height="16" VerticalAlignment="Top"/>
+        <Button x:Name="btntestroom" Grid.Column="1" Margin="0,0.344,26.533,0" FontSize="10"
+            Content="test" Click="btntestroom_Click" Width="62" Height="16" VerticalAlignment="Top" HorizontalContentAlignment="Center" HorizontalAlignment="Right"/>
 
     </Grid>
 </Window>
