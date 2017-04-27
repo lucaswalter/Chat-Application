@@ -1,10 +1,13 @@
 using Newtonsoft.Json;
 using Protocol;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace Client
@@ -16,12 +19,16 @@ namespace Client
     {
 
         public string UserName;
+        public List<Room> roomList;
 
         public MainWindow(string userName)
         {
             InitializeComponent();
             UserName = userName;
+            roomList = new List<Room>();
             InitializeServerConnection();
+            AddRoom("Default", 0);
+            AddRoom("Test", 1);
         }
 
         #region Private Members
@@ -181,12 +188,48 @@ namespace Client
 
             try
             {
+                var tabItem = tabControl.SelectedItem as TabItem;
+                TextBox chatBox = (TextBox)tabItem.Content;
                 chatBox.AppendText(message + "\n");
                 chatBox.ScrollToEnd();
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Add rooms by name
+        /// </summary>
+        /// <param name="header"></param>
+        private void AddRoom(string header, int roomId)
+        {
+            Room room = new Room();
+            room.Tab = new TabItem();
+            room.Tab.Header = header;
+            room.ChatBox = new TextBox();
+            room.Tab.Content = room.ChatBox;
+
+            room.Id = roomId;
+            room.Header = header;
+
+            roomList.Add(room); 
+
+            tabControl.Items.Add(room.Tab);
+            tabControl.SelectedItem = room.Tab;
+        }
+
+        private void tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            TabControl tabControl = (TabControl)sender;
+            ScrollViewer scroller = (ScrollViewer)tabControl.Template.FindName("TabControlScroller", tabControl);
+            if (scroller != null)
+            {
+                double index = (double)(tabControl.SelectedIndex);
+                double offset = index * (scroller.ScrollableWidth / (double)(tabControl.Items.Count));
+                scroller.ScrollToHorizontalOffset(offset);
+
             }
         }
 
@@ -291,7 +334,7 @@ namespace Client
                     clientSocket.BeginSendTo(msg, 0, msg.Length, SocketFlags.None, epServer, new AsyncCallback(this.SendData), null);
 
                     // TODO: Wait For Server Callback To Display Message
-                    //AppendLineToChatBox("[" + message.When + "] " + message.Who + " : " + messageText.Text);
+                    AppendLineToChatBox("[" + message.When + "] " + message.Who + " : " + messageText.Text);
                     messageText.Clear();
                 }
                 catch (Exception e)
