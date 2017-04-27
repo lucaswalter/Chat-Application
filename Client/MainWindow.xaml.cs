@@ -176,8 +176,8 @@ namespace Client
         // Returns The Currently Selected Room
         private Room GetCurrentRoom()
         {
-            var currenTabItem = tabControl.SelectedItem as TabItem;
-            string header = currenTabItem.Header.ToString();
+            var currentTabItem = tabControl.SelectedItem as TabItem;
+            string header = currentTabItem.Header.ToString();
 
             var currentRoom = roomList.Find(x => x.Header == header);
             return currentRoom;
