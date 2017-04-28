@@ -18,13 +18,14 @@ namespace Client
     {
 
         public string UserName;
-        public List<Room> roomList;
+        public List<Room> availableRoomList;
+        public List<Room> activeRoomList;
 
         public MainWindow(string userName)
         {
             InitializeComponent();
             UserName = userName;
-            roomList = new List<Room>();
+            activeRoomList = new List<Room>();
             InitializeServerConnection();
             AddRoom("Default", 0);
             AddRoom("Test", 1); // TODO: Remove Once Room List Box Works
@@ -190,7 +191,7 @@ namespace Client
             var currentTabItem = tabControl.SelectedItem as TabItem;
             string header = currentTabItem.Header.ToString();
 
-            var currentRoom = roomList.Find(x => x.Header == header);
+            var currentRoom = activeRoomList.Find(x => x.Header == header);
             return currentRoom;
         }
 
@@ -210,7 +211,7 @@ namespace Client
             try
             {
                 // Append Message To TextBox
-                var room = roomList.Find(x => x.Id == roomId);
+                var room = activeRoomList.Find(x => x.Id == roomId);
                 var tabItem = room.Tab;
                 TextBox chatBox = (TextBox)tabItem.Content;
 
@@ -235,23 +236,23 @@ namespace Client
 
             int[] roomIdIntArray = Array.ConvertAll(roomIdStringArray, s => int.Parse(s));
 
-            List<Room> rooms = new List<Room>();
+            availableRoomList.Clear();
 
             for (int i = 0; i < roomIdIntArray.Length; i++)
             {
                 var room = new Room();
                 room.Id = roomIdIntArray[i];
                 room.Header = roomHeaderArray[i];
-                rooms.Add(room);
+                availableRoomList.Add(room);
             }
 
-            RoomListBox.ItemsSource = rooms;
+            RoomListBox.ItemsSource = availableRoomList;
         }
 
         void RoomListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             ListBoxItem selectedListBox = (ListBoxItem) sender;
-            // TODO: Get Room ID & Header To Join Rooms
+            // TODO: Get Room Header To Join Rooms
         }
 
         /// <summary>
@@ -269,7 +270,7 @@ namespace Client
             room.Id = roomId;
             room.Header = header;
 
-            roomList.Add(room); 
+            activeRoomList.Add(room); 
 
             tabControl.Items.Add(room.Tab);
             tabControl.SelectedItem = room.Tab;
