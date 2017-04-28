@@ -259,6 +259,7 @@ namespace Client
         /// Add rooms by name
         /// </summary>
         /// <param name="header"></param>
+        // TODO: Request To Join Room
         private void AddRoom(string header, int roomId)
         {
             Room room = new Room();
@@ -320,7 +321,7 @@ namespace Client
             // TODO: Update when deciding upon final networking solution
             try
             {
-                if(this.clientSocket != null)
+                if (this.clientSocket != null)
                 {
                     // InitializeComponent a new message for logoff
                     Message sendData = new Message
