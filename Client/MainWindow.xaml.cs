@@ -2,7 +2,6 @@ using Newtonsoft.Json;
 using Protocol;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -138,10 +137,24 @@ namespace Client
                     Message message = JsonConvert.DeserializeObject<Message>(jsonStr);
 
                     // TODO: Handle Messange
-                    // Update Message Box Through Delegate
-                    if (!string.IsNullOrEmpty(message.What))
-                        this.Dispatcher.Invoke(this.displayMessageDelegate, new object[] { "[" + message.When + "] " + message.Who + " : " + message.What, message.Where });
 
+                    # region Protocol Handling
+
+                    switch (message.Why)
+                    {
+                        case Protocol.Protocol.PUBLIC_MESSAGE:
+                            // Update Message Box Through Delegate
+                            if (!string.IsNullOrEmpty(message.What))
+                                this.Dispatcher.Invoke(this.displayMessageDelegate, new object[] { "[" + message.When + "] " + message.Who + " : " + message.What, message.Where });
+                            break;
+
+                        case Protocol.Protocol.SEND_PUBLIC_ROOMS:
+                            UpdateRoomListBox();
+                            break;
+                    }
+
+                    #endregion
+            
                     // Reset data stream
                     this.dataStream = new byte[1500];
 
@@ -210,6 +223,13 @@ namespace Client
             {
                 MessageBox.Show(e.ToString());
             }
+        }
+
+        private void UpdateRoomListBox()
+        {
+            List<Room> rooms = new List<Room>();
+
+            RoomListBox.ItemsSource = rooms;
         }
 
         /// <summary>

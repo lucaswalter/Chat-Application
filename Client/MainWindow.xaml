@@ -17,7 +17,19 @@
     </Controls:MetroWindow.LeftWindowCommands>-->
 
     <Grid>
-        <ListBox HorizontalAlignment="Left" Height="403" Margin="10,56,0,0" VerticalAlignment="Top" Width="179"/>
+        <ListBox x:Name="RoomListBox" HorizontalAlignment="Left" Height="403" Margin="10,56,0,0" VerticalAlignment="Top" Width="179">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid Margin="0,2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="100" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding Header}" />
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
         <Label Content="Public Rooms" HorizontalAlignment="Left" Margin="35,10,0,0" VerticalAlignment="Top" Width="125" FontSize="18" FontWeight="Bold"/>
         <GridSplitter HorizontalAlignment="Left" Height="471" Margin="194,0,0,0" VerticalAlignment="Top" Width="2"/>
         <TextBox x:Name="messageText" HorizontalAlignment="Left" Height="23" Margin="204,433,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="581" KeyUp="MessageText_KeyUp"/>
