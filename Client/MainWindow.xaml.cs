@@ -27,7 +27,7 @@ namespace Client
             roomList = new List<Room>();
             InitializeServerConnection();
             AddRoom("Default", 0);
-            AddRoom("Test", 1);
+            AddRoom("Test", 1); // TODO: Remove Once Room List Box Works
         }
 
         #region Private Members
@@ -136,8 +136,6 @@ namespace Client
                     // Deserialize JSON
                     Message message = JsonConvert.DeserializeObject<Message>(jsonStr);
 
-                    // TODO: Handle Messange
-
                     # region Protocol Handling
 
                     switch (message.Why)
@@ -149,7 +147,7 @@ namespace Client
                             break;
 
                         case Protocol.Protocol.SEND_PUBLIC_ROOMS:
-                            UpdateRoomListBox();
+                            UpdateRoomListBox(message.Who, message.What);
                             break;
                     }
 
@@ -225,11 +223,35 @@ namespace Client
             }
         }
 
-        private void UpdateRoomListBox()
+        /// <summary>
+        /// Update Room List Box From Room Ids & Room Headers
+        /// </summary>
+        /// <param name="roomIds"></param>
+        /// <param name="roomHeaders"></param>
+        private void UpdateRoomListBox(string roomIds, string roomHeaders)
         {
+            string[] roomIdStringArray = roomIds.Split(',');
+            string[] roomHeaderArray = roomHeaders.Split(',');
+
+            int[] roomIdIntArray = Array.ConvertAll(roomIdStringArray, s => int.Parse(s));
+
             List<Room> rooms = new List<Room>();
 
+            for (int i = 0; i < roomIdIntArray.Length; i++)
+            {
+                var room = new Room();
+                room.Id = roomIdIntArray[i];
+                room.Header = roomHeaderArray[i];
+                rooms.Add(room);
+            }
+
             RoomListBox.ItemsSource = rooms;
+        }
+
+        void RoomListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            ListBoxItem selectedListBox = (ListBoxItem) sender;
+            // TODO: Get Room ID & Header To Join Rooms
         }
 
         /// <summary>
