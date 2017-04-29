@@ -249,7 +249,13 @@ namespace Client
             RoomListBox.ItemsSource = availableRoomList;
         }
 
-        void RoomListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void RoomListBox_SelectionChanged(object sender, System.EventArgs e)
+        {
+            // Get the currently selected item in the ListBox.
+            string selectedItem = RoomListBox.SelectedItem.ToString();
+        }
+
+        private void RoomListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             ListBoxItem selectedListBox = (ListBoxItem) sender;
             // TODO: Get Room Header To Join Rooms
@@ -286,7 +292,6 @@ namespace Client
                 double index = (double)(tabControl.SelectedIndex);
                 double offset = index * (scroller.ScrollableWidth / (double)(tabControl.Items.Count));
                 scroller.ScrollToHorizontalOffset(offset);
-
             }
         }
 

@@ -17,7 +17,7 @@
     </Controls:MetroWindow.LeftWindowCommands>-->
 
     <Grid>
-        <ListBox x:Name="RoomListBox" ListBoxItem.MouseDoubleClick="RoomListBox_MouseDoubleClick" HorizontalAlignment="Left" Height="403" Margin="10,56,0,0" VerticalAlignment="Top" Width="179">
+        <ListBox x:Name="RoomListBox" SelectionChanged="RoomListBox_SelectionChanged" MouseDoubleClick="RoomListBox_MouseDoubleClick" HorizontalAlignment="Left" Height="403" Margin="10,56,0,0" VerticalAlignment="Top" Width="179">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Grid Margin="0,2">
