@@ -246,19 +246,7 @@ namespace Client
                 availableRoomList.Add(room);
             }
 
-            RoomListBox.ItemsSource = availableRoomList;
-        }
-
-        private void RoomListBox_SelectionChanged(object sender, System.EventArgs e)
-        {
-            // Get the currently selected item in the ListBox.
-            string selectedItem = RoomListBox.SelectedItem.ToString();
-        }
-
-        private void RoomListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            ListBoxItem selectedListBox = (ListBoxItem) sender;
-            // TODO: Get Room Header To Join Rooms
+            //RoomListBox.ItemsSource = availableRoomList;
         }
 
         /// <summary>

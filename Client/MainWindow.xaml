@@ -17,26 +17,10 @@
     </Controls:MetroWindow.LeftWindowCommands>-->
 
     <Grid>
-        <ListBox x:Name="RoomListBox" SelectionChanged="RoomListBox_SelectionChanged" MouseDoubleClick="RoomListBox_MouseDoubleClick" HorizontalAlignment="Left" Height="403" Margin="10,56,0,0" VerticalAlignment="Top" Width="179">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Grid Margin="0,2">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="100" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="{Binding Header}" />
-                    </Grid>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
-        <Label Content="Public Rooms" HorizontalAlignment="Left" Margin="35,10,0,0" VerticalAlignment="Top" Width="125" FontSize="18" FontWeight="Bold"/>
-        <GridSplitter HorizontalAlignment="Left" Height="471" Margin="194,0,0,0" VerticalAlignment="Top" Width="2"/>
-        <TextBox x:Name="messageText" HorizontalAlignment="Left" Height="23" Margin="204,433,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="581" KeyUp="MessageText_KeyUp"/>
+        <TextBox x:Name="messageText" HorizontalAlignment="Left" Height="23" Margin="10,433,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="775" KeyUp="MessageText_KeyUp"/>
         <Button x:Name="sendMessageButton" Content="Send" HorizontalAlignment="Left" Margin="790,432,0,0" VerticalAlignment="Top" Width="94" Click="SendMessageButton_Click"/>
         <GridSplitter HorizontalAlignment="Left" Height="2" Margin="196,425,0,0" VerticalAlignment="Top" Width="688"/>
-        <GridSplitter HorizontalAlignment="Left" Height="2" Margin="0,49,0,0" VerticalAlignment="Top" Width="194"/>
-        <TabControl x:Name="tabControl" HorizontalAlignment="Left" Height="413" Margin="201,7,0,0" VerticalAlignment="Top" Width="683" SelectionChanged="tabControl_SelectionChanged">
+        <TabControl x:Name="tabControl" HorizontalAlignment="Left" Height="413" Margin="10,7,0,0" VerticalAlignment="Top" Width="874" SelectionChanged="tabControl_SelectionChanged">
             <TabControl.Resources>
                 <Style TargetType="TabControl">
                     <Setter Property="Template">
