@@ -148,7 +148,7 @@ namespace Client
                             break;
 
                         case Protocol.Protocol.SEND_PUBLIC_ROOMS:
-                            UpdateRoomListBox(message.Who, message.What);
+                            UpdateRooms(message.Who, message.What);
                             break;
                     }
 
@@ -225,11 +225,11 @@ namespace Client
         }
 
         /// <summary>
-        /// Update Room List Box From Room Ids & Room Headers
+        /// Update Room List From Room Ids & Room Headers
         /// </summary>
         /// <param name="roomIds"></param>
         /// <param name="roomHeaders"></param>
-        private void UpdateRoomListBox(string roomIds, string roomHeaders)
+        private void UpdateRooms(string roomIds, string roomHeaders)
         {
             string[] roomIdStringArray = roomIds.Split(',');
             string[] roomHeaderArray = roomHeaders.Split(',');
