@@ -1,10 +1,12 @@
 using Newtonsoft.Json;
 using Protocol;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace Client
@@ -16,12 +18,17 @@ namespace Client
     {
 
         public string UserName;
+        public List<Room> availableRoomList;
+        public List<Room> activeRoomList;
 
         public MainWindow(string userName)
         {
             InitializeComponent();
             UserName = userName;
+            activeRoomList = new List<Room>();
             InitializeServerConnection();
+            AddRoom("Default", 0);
+            AddRoom("Test", 1); // TODO: Remove Once Room List Box Works
         }
 
         #region Private Members
@@ -36,7 +43,7 @@ namespace Client
         private byte[] dataStream = new byte[1024];
 
         // Display Message Delegate
-        private delegate void DisplayMessageDelegate(string message);
+        private delegate void DisplayMessageDelegate(string message, int roomId);
         private DisplayMessageDelegate displayMessageDelegate = null;
 
         #endregion
@@ -130,11 +137,23 @@ namespace Client
                     // Deserialize JSON
                     Message message = JsonConvert.DeserializeObject<Message>(jsonStr);
 
-                    // TODO: Handle Messange
-                    // Update Message Box Through Delegate
-                    if (!string.IsNullOrEmpty(message.What))
-                        this.Dispatcher.Invoke(this.displayMessageDelegate, new object[] { "[" + message.When + "] " + message.Who + " : " + message.What });
+                    # region Protocol Handling
 
+                    switch (message.Why)
+                    {
+                        case Protocol.Protocol.PUBLIC_MESSAGE:
+                            // Update Message Box Through Delegate
+                            if (!string.IsNullOrEmpty(message.What))
+                                this.Dispatcher.Invoke(this.displayMessageDelegate, new object[] { "[" + message.When + "] " + message.Who + " : " + message.What, message.Where });
+                            break;
+
+                        case Protocol.Protocol.SEND_PUBLIC_ROOMS:
+                            UpdateRooms(message.Who, message.What);
+                            break;
+                    }
+
+                    #endregion
+            
                     // Reset data stream
                     this.dataStream = new byte[1500];
 
@@ -164,7 +183,17 @@ namespace Client
                 }
             }
             return "127.0.0.1";
-        }  
+        }
+
+        // Returns The Currently Selected Room
+        private Room GetCurrentRoom()
+        {
+            var currentTabItem = tabControl.SelectedItem as TabItem;
+            string header = currentTabItem.Header.ToString();
+
+            var currentRoom = activeRoomList.Find(x => x.Header == header);
+            return currentRoom;
+        }
 
         #endregion
 
@@ -174,19 +203,83 @@ namespace Client
         /// Append the provided message to the chatBox text box.
         /// </summary>
         /// <param name="message"></param>
-        private void AppendLineToChatBox(string message)
+        private void AppendLineToChatBox(string message, int roomId)
         {
             // To ensure we can successfully append to the text box from any thread
             // we need to wrap the append within an invoke action.
 
             try
             {
+                // Append Message To TextBox
+                var room = activeRoomList.Find(x => x.Id == roomId);
+                var tabItem = room.Tab;
+                TextBox chatBox = (TextBox)tabItem.Content;
+
                 chatBox.AppendText(message + "\n");
                 chatBox.ScrollToEnd();
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Update Room List From Room Ids & Room Headers
+        /// </summary>
+        /// <param name="roomIds"></param>
+        /// <param name="roomHeaders"></param>
+        private void UpdateRooms(string roomIds, string roomHeaders)
+        {
+            string[] roomIdStringArray = roomIds.Split(',');
+            string[] roomHeaderArray = roomHeaders.Split(',');
+
+            int[] roomIdIntArray = Array.ConvertAll(roomIdStringArray, s => int.Parse(s));
+
+            availableRoomList.Clear();
+
+            for (int i = 0; i < roomIdIntArray.Length; i++)
+            {
+                var room = new Room();
+                room.Id = roomIdIntArray[i];
+                room.Header = roomHeaderArray[i];
+                availableRoomList.Add(room);
+            }
+
+            //RoomListBox.ItemsSource = availableRoomList;
+        }
+
+        /// <summary>
+        /// Add rooms by name
+        /// </summary>
+        /// <param name="header"></param>
+        // TODO: Request To Join Room
+        private void AddRoom(string header, int roomId)
+        {
+            Room room = new Room();
+            room.Tab = new TabItem();
+            room.Tab.Header = header;
+            room.ChatBox = new TextBox();
+            room.Tab.Content = room.ChatBox;
+
+            room.Id = roomId;
+            room.Header = header;
+
+            activeRoomList.Add(room); 
+
+            tabControl.Items.Add(room.Tab);
+            tabControl.SelectedItem = room.Tab;
+        }
+
+        private void tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            TabControl tabControl = (TabControl)sender;
+            ScrollViewer scroller = (ScrollViewer)tabControl.Template.FindName("TabControlScroller", tabControl);
+            if (scroller != null)
+            {
+                double index = (double)(tabControl.SelectedIndex);
+                double offset = index * (scroller.ScrollableWidth / (double)(tabControl.Items.Count));
+                scroller.ScrollToHorizontalOffset(offset);
             }
         }
 
@@ -221,7 +314,7 @@ namespace Client
             // TODO: Update when deciding upon final networking solution
             try
             {
-                if(this.clientSocket != null)
+                if (this.clientSocket != null)
                 {
                     // InitializeComponent a new message for logoff
                     Message sendData = new Message
@@ -275,7 +368,7 @@ namespace Client
                         Who = UserName,
                         What = messageText.Text,
                         When = DateTime.Now.ToShortTimeString(),
-                        Where = 0, // Default Chat Room
+                        Where = GetCurrentRoom().Id, // Default Chat Room
                         Why = Protocol.Protocol.PUBLIC_MESSAGE
                     };
 
