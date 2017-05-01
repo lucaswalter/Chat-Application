@@ -232,13 +232,28 @@ namespace Client
 
             try
             {
-                // Append Message To TextBox
-                var room = activeRoomList.Find(x => x.Id == roomId);
-                var tabItem = room.Tab;
-                TextBox chatBox = (TextBox)tabItem.Content;
 
-                chatBox.AppendText(message + "\n");
-                chatBox.ScrollToEnd();
+                if (roomId == -1)
+                {
+                    // Append Message To All TextBoxes
+                    foreach (var room in activeRoomList)
+                    {
+                        var tabItem = room.Tab;
+                        TextBox chatBox = (TextBox)tabItem.Content;
+                        chatBox.AppendText(message + "\n");
+                        chatBox.ScrollToEnd();
+                    }
+                }
+                else
+                {
+                    // Append Message To TextBox
+                    var room = activeRoomList.Find(x => x.Id == roomId);
+                    var tabItem = room.Tab;
+                    TextBox chatBox = (TextBox)tabItem.Content;
+
+                    chatBox.AppendText(message + "\n");
+                    chatBox.ScrollToEnd();
+                }          
             }
             catch (Exception e)
             {
