@@ -112,8 +112,6 @@
             Content="Add Room" Click="btnNewRoom_Click" Grid.ColumnSpan="2" HorizontalAlignment="Right" Width="53" Height="16" VerticalAlignment="Top"/>
         <Button x:Name="btnDeleteRoom" Grid.Column="3" Margin="0,2,16,0" FontSize="10"
             Content="Delete Room" Click="btnDeleteRoom_Click" HorizontalAlignment="Right" Width="62" Height="16" VerticalAlignment="Top"/>
-        <Button x:Name="btntestroom" Grid.Column="1" Margin="0,0.344,26.533,0" FontSize="10"
-            Content="test" Click="btntestroom_Click" Width="62" Height="16" VerticalAlignment="Top" HorizontalContentAlignment="Center" HorizontalAlignment="Right"/>
 
     </Grid>
 </Window>
