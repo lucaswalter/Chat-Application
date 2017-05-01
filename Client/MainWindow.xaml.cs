@@ -48,8 +48,8 @@ namespace Client
         private delegate void UpdateRoomsDelegate(string roomIds, string roomHeaders);
         private UpdateRoomsDelegate updateRoomsDelegate = null;
 
-        /*private delegate void CreateRoomsDelegate(string roomHeader, int roomId);
-        private CreateRoomsDelegate createRoomDelegate = null;*/
+        private delegate void CreateRoomsDelegate(string roomHeader, int roomId);
+        private CreateRoomsDelegate createRoomDelegate = null;
 
         private delegate void DeleteRoomsDelegate(string roomHeader, int roomId);
         private DeleteRoomsDelegate deleteRoomDelegate = null;
@@ -65,7 +65,7 @@ namespace Client
                 // Initialize Delegate
                 this.displayMessageDelegate = new DisplayMessageDelegate(this.AppendLineToChatBox);
                 this.updateRoomsDelegate = new UpdateRoomsDelegate(this.UpdateRooms);
-                //this.createRoomDelegate = new CreateRoomsDelegate(this.CreateRoom);
+                this.createRoomDelegate = new CreateRoomsDelegate(this.AddRoom);
                 this.deleteRoomDelegate = new DeleteRoomsDelegate(this.DeleteRoom);
 
                 // Initialise socket
@@ -163,10 +163,10 @@ namespace Client
                             this.Dispatcher.Invoke(this.updateRoomsDelegate, new object[] { message.Who, message.What });
                             break;
 
-                        /*case Protocol.Protocol.CREATE_PUBLIC_ROOM:
+                        case Protocol.Protocol.CREATE_PUBLIC_ROOM:
                             // Update Tabs Through Delegate
-                            this.Dispatcher.Invoke(this.createRoomDelegate, new object[] { message.Who, message.What });
-                            break;*/
+                            this.Dispatcher.Invoke(this.createRoomDelegate, new object[] { message.What, message.Where });
+                            break;
 
                         case Protocol.Protocol.CLOSE_ROOM:
                             // Delete Tabs Through Deletate
