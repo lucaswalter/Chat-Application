@@ -581,7 +581,7 @@ namespace Server
                 Who = null,
                 What = room.header,
                 When = DateTime.Now.ToShortTimeString(),
-                Where = -1, // All Clients
+                Where = room.id,
                 Why = protocol
             };
 
