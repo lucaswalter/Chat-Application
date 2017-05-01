@@ -159,10 +159,10 @@ namespace Client
                             this.Dispatcher.Invoke(this.updateRoomsDelegate, new object[] { message.Who, message.What });
                             break;
 
-                        // TODO: Uncomment When DELETE_ROOM Is Added
-                        /*case Protocol.Protocol.DELETE_ROOM:
+                        case Protocol.Protocol.CLOSE_ROOM:
                             // Delete Tabs Through Deletate
-                            this.Dispatcher.Invoke(this.deleteRoomsDelegate, new object[] { message.Who, message.Where });*/
+                            this.Dispatcher.Invoke(this.deleteRoomsDelegate, new object[] { message.Who, message.Where });
+                            break;
                     }
 
                     #endregion
