@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using Protocol;
 using Newtonsoft.Json;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Server
 {
@@ -122,7 +123,7 @@ namespace Server
                 // Start listening for incoming data
                 serverSocket.BeginReceiveFrom(this.dataStream, 0, this.dataStream.Length, SocketFlags.None, ref epSender, new AsyncCallback(ReceiveData), epSender);
 
-                ServerComTextBox.Text = "Listening" + "\n";
+                ServerComTextBox.Text = "Listening for Clients..." + "\n";
             }
             catch (Exception ex)
             {
@@ -638,6 +639,12 @@ namespace Server
             {
                 MessageBox.Show("Cannot Delete the initial Room");
             }
+        }
+
+        private void ServerCommInput_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter || e.Key == Key.Return)
+                Command_Button(sender, e);
         }
     }
 }
