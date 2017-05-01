@@ -311,7 +311,7 @@ namespace Client
             activeRoomList.Add(room); 
 
             tabControl.Items.Add(room.Tab);
-            tabControl.SelectedItem = room.Tab;
+            //tabControl.SelectedItem = room.Tab;
         }
 
         /// <summary>
