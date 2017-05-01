@@ -144,7 +144,7 @@ namespace Server
                     What = "--- !!! SERVER IS SHUTTING DOWN !!! ---",
                     When = DateTime.Now.ToShortTimeString(),
                     Where = -1, // All Rooms
-                    Why = Protocol.Protocol.GLOBAL_WARNING_MESSAGE
+                    Why = Protocol.Protocol.PUBLIC_MESSAGE
                 };
 
                 string jsonMessage = JsonConvert.SerializeObject(sendData);
@@ -276,9 +276,9 @@ namespace Server
                             sendOne = SendRooms(message);
                             multiMessage = true;
 
-                            sending.Where = 0;
+                            sending.Where = -1;
                             sending.What = string.Format("-- {0} is online --", message.Who);
-                            sending.Why = 100;
+                            sending.Why = Protocol.Protocol.PUBLICMESSAGE;
                             break;
 
                         case Protocol.Protocol.ADD_FRIEND:
