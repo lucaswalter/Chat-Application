@@ -143,7 +143,7 @@ namespace Server
                     Who = "SERVER",
                     What = "--- !!! SERVER IS SHUTTING DOWN !!! ---",
                     When = DateTime.Now.ToShortTimeString(),
-                    Where = 0, // Default Chat Room
+                    Where = -1, // All Rooms
                     Why = Protocol.Protocol.GLOBAL_WARNING_MESSAGE
                 };
 
@@ -155,7 +155,7 @@ namespace Server
                 msg = enc.GetBytes(jsonMessage);
 
                 // Send message to server
-                foreach (Client client in this.clientList)
+                foreach (Client client in clientList)
                 {
                     this.serverSocket.SendTo(msg, 0, msg.Length, SocketFlags.None, client.endPoint);
                 }
@@ -325,8 +325,8 @@ namespace Server
                                 }
                             }
                             sending.What = string.Format("-- {0} has gone offline --", message.Who);
-                            sending.Where = 0;
-                            sending.Why = 100;
+                            sending.Where = -1;
+                            sending.Why = Protocol.Protocol.PUBLIC_MESSAGE;
                             break;
 
                         case Protocol.Protocol.RETRIEVE_FRIENDS:
@@ -381,6 +381,7 @@ namespace Server
                             break;
 
                         case Protocol.Protocol.CLOSE_ROOM:
+
 
                             break;
 
@@ -540,6 +541,8 @@ namespace Server
 
             room.header = header;
             roomList.Add(room);
+
+            SendRoomChange(room, Protocol.Protocol.CREATE_PUBLIC_ROOM);
             
             tabCtrl.Items.Add(room.tab);
             tabCtrl.SelectedItem = room.tab;
@@ -571,6 +574,31 @@ namespace Server
             return sendingRooms;
         }
 
+        private void SendRoomChange(Room room, int protocol)
+        {
+            Message message = new Message
+            {
+                Who = null,
+                What = room.header,
+                When = DateTime.Now.ToShortTimeString(),
+                Where = -1, // All Clients
+                Why = protocol
+            };
+
+            string jsonMessage = JsonConvert.SerializeObject(message);
+
+            // Encode Into Byte Array
+            var enc = new ASCIIEncoding();
+            byte[] msg = new byte[1500];
+            msg = enc.GetBytes(jsonMessage);
+
+            // Send message to server
+            foreach (Client client in clientList)
+            {
+                this.serverSocket.SendTo(msg, 0, msg.Length, SocketFlags.None, client.endPoint);
+            }
+        }
+
         private void tabCtrl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             TabControl tabControl = (TabControl)sender;
@@ -588,8 +616,12 @@ namespace Server
         {
             if (tabCtrl.SelectedIndex > 0)
             {
+                Room room = roomList[tabCtrl.SelectedIndex];
+                SendRoomChange(room, Protocol.Protocol.CLOSE_ROOM);
+
                 tabCtrl.Items.Remove(roomList[tabCtrl.SelectedIndex].tab);
                 roomList.RemoveAt(tabCtrl.SelectedIndex);
+
             }
             else
             {
