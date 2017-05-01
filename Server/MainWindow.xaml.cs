@@ -87,6 +87,9 @@ namespace Server
             // Add Default Room
             roomList = new List<Room>();
             AddRoom("Welcome!");
+            AddRoom("CS 3100");
+            AddRoom("ProgLang");
+            AddRoom("#Team4");
         }
         private void InitializeServerConnection()
         {
@@ -278,7 +281,7 @@ namespace Server
 
                             sending.Where = -1;
                             sending.What = string.Format("-- {0} is online --", message.Who);
-                            sending.Why = Protocol.Protocol.PUBLICMESSAGE;
+                            sending.Why = Protocol.Protocol.PUBLIC_MESSAGE;
                             break;
 
                         case Protocol.Protocol.ADD_FRIEND:
