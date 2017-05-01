@@ -7,24 +7,24 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Server"
         mc:Ignorable="d"
-        Title="Time4aChat Command Center" Height="450" Width="625" ResizeMode="NoResize"
+        Title="Time4aChat Command Center" Height="450" Width="625"
         Closing="Window_Closing" Foreground="#FFFFF9F9" Background="#FF3CA3EA">
 
     <Grid>
         <!--- This defines the grid of the application-->
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="113"/>
+            <ColumnDefinition Width="112"/>
             <ColumnDefinition Width="2*"/>
             <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width=".5*"/>
+            <ColumnDefinition Width="56"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height ="1*"/>
+            <RowDefinition Height ="47"/>
             <RowDefinition Height="3*"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="3*"/>
-            <RowDefinition Height="1*"/>
+            <RowDefinition Height="46"/>
         </Grid.RowDefinitions>
 
         <!--- User Online Area-->
@@ -43,17 +43,17 @@
                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
         />
 
-        
+
         <!--- Room Viewer Area-->
         <!--- This will allow the user to select a active room and see the messages on the chat-->
         <!--- This creates the border of the "Room Viewer" area and puts the label in the left most column -->
         <Border Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" Grid.ColumnSpan="4"
                 BorderBrush="WhiteSmoke" BorderThickness="2"
                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-        <TextBlock Text="Room Viewer" Grid.Row="0" Grid.Column="2" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Margin="5,0,1,17"/>
+        <TextBlock Text="Room Viewer" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Margin="71,1,62,28" Width="92"/>
         <!--- This is where the latest messages from the selected chat will display-->
 
-        
+
         <!--- Server Command Center Area-->
         <!--- This will display where the user can issue commands from the server,  -->
         <!--- and see previous commands and what the commands did-->
@@ -62,15 +62,15 @@
                 BorderBrush="WhiteSmoke" BorderThickness="2"
                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         </Border>
-        <TextBlock Text="Server Command Center" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Center" VerticalAlignment="Top" FontWeight="Bold" FontSize="16" Margin="70,5,22,0" Width="190"/>
-        <TextBlock Grid.Row="4" Grid.Column="1" Margin="5,5" 
-                   HorizontalAlignment="Center" Text="Command: " VerticalAlignment="Center" FontWeight="Bold" />
+        <TextBlock Text="Server Command Center" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Center" VerticalAlignment="Top" FontWeight="Bold" FontSize="16" Margin="70,5,22,0" Width="190"/>
+        <TextBlock Grid.Row="4" Grid.Column="1" Margin="23,15,0,15" 
+                   HorizontalAlignment="Left" Text="Command: " VerticalAlignment="Center" FontWeight="Bold" />
         <!--- This is the TextBox that the user types commands into -->
         <TextBox x:Name="ServerCommInput" Grid.Row="4" Grid.Column="2" Margin="0,5" Grid.ColumnSpan="2"
-                 HorizontalAlignment="Stretch" Text=""/>
+                 HorizontalAlignment="Stretch" Text="" VerticalContentAlignment="Center" FontSize="13" Height="30" KeyUp="ServerCommInput_KeyUp"/>
         <!--- This button will submit the command -->
-        <Button x:Name="ServerCommButton" Grid.Row="4" Grid.Column="4" Margin="5,5" FontSize="10"
-            Content="Send" Click="Command_Button" Width="30"/>
+        <Button x:Name="ServerCommButton" Grid.Row="4" Grid.Column="4" Margin="5,5" FontSize="12"
+            Content="Send" Click="Command_Button" Height="25" Width="40" VerticalAlignment="Center"/>
         <!--- This is where the past commands/what the commands do will show-->
         <TextBox x:Name="ServerComTextBox" Grid.Row="3" Grid.Column="1" Margin="5,34,5,0" Grid.ColumnSpan="4"
                    Text="" IsReadOnly="True" Background="#FFC7D4F0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"/>
@@ -110,7 +110,7 @@
         </TabControl>
         <Button x:Name="btnNewRoom" Grid.Column="3" Margin="0,2,5,0" FontSize="10"
             Content="Add Room" Click="btnNewRoom_Click" Grid.ColumnSpan="2" HorizontalAlignment="Right" Width="53" Height="16" VerticalAlignment="Top"/>
-        <Button x:Name="btnDeleteRoom" Grid.Column="3" Margin="0,2,16,0" FontSize="10"
+        <Button x:Name="btnDeleteRoom" Grid.Column="3" Margin="0,2,5,0" FontSize="10"
             Content="Delete Room" Click="btnDeleteRoom_Click" HorizontalAlignment="Right" Width="62" Height="16" VerticalAlignment="Top"/>
 
     </Grid>

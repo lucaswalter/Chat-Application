@@ -28,8 +28,6 @@ namespace Client
             availableRoomList = new List<Room>();
             activeRoomList = new List<Room>();
             InitializeServerConnection();
-            //AddRoom("Default", 0);
-            //AddRoom("Test", 1); // TODO: Remove Once Room List Box Works
         }
 
         #region Private Members
@@ -50,6 +48,12 @@ namespace Client
         private delegate void UpdateRoomsDelegate(string roomIds, string roomHeaders);
         private UpdateRoomsDelegate updateRoomsDelegate = null;
 
+        private delegate void CreateRoomsDelegate(string roomHeader, int roomId);
+        private CreateRoomsDelegate createRoomDelegate = null;
+
+        private delegate void DeleteRoomsDelegate(string roomHeader, int roomId);
+        private DeleteRoomsDelegate deleteRoomDelegate = null;
+
         #endregion
 
         #region Networking
@@ -60,8 +64,9 @@ namespace Client
             {
                 // Initialize Delegate
                 this.displayMessageDelegate = new DisplayMessageDelegate(this.AppendLineToChatBox);
-
                 this.updateRoomsDelegate = new UpdateRoomsDelegate(this.UpdateRooms);
+                this.createRoomDelegate = new CreateRoomsDelegate(this.AddRoom);
+                this.deleteRoomDelegate = new DeleteRoomsDelegate(this.DeleteRoom);
 
                 // Initialise socket
                 this.clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
@@ -157,6 +162,16 @@ namespace Client
                             // Update Tabs Through Delegate
                             this.Dispatcher.Invoke(this.updateRoomsDelegate, new object[] { message.Who, message.What });
                             break;
+
+                        case Protocol.Protocol.CREATE_PUBLIC_ROOM:
+                            // Update Tabs Through Delegate
+                            this.Dispatcher.Invoke(this.createRoomDelegate, new object[] { message.What, message.Where });
+                            break;
+
+                        case Protocol.Protocol.CLOSE_ROOM:
+                            // Delete Tabs Through Deletate
+                            this.Dispatcher.Invoke(this.deleteRoomDelegate, new object[] { message.What, message.Where });
+                            break;
                     }
 
                     #endregion
@@ -217,13 +232,28 @@ namespace Client
 
             try
             {
-                // Append Message To TextBox
-                var room = activeRoomList.Find(x => x.Id == roomId);
-                var tabItem = room.Tab;
-                TextBox chatBox = (TextBox)tabItem.Content;
 
-                chatBox.AppendText(message + "\n");
-                chatBox.ScrollToEnd();
+                if (roomId == -1)
+                {
+                    // Append Message To All TextBoxes
+                    foreach (var room in activeRoomList)
+                    {
+                        var tabItem = room.Tab;
+                        TextBox chatBox = (TextBox)tabItem.Content;
+                        chatBox.AppendText(message + "\n");
+                        chatBox.ScrollToEnd();
+                    }
+                }
+                else
+                {
+                    // Append Message To TextBox
+                    var room = activeRoomList.Find(x => x.Id == roomId);
+                    var tabItem = room.Tab;
+                    TextBox chatBox = (TextBox)tabItem.Content;
+
+                    chatBox.AppendText(message + "\n");
+                    chatBox.ScrollToEnd();
+                }          
             }
             catch (Exception e)
             {
@@ -281,7 +311,18 @@ namespace Client
             activeRoomList.Add(room); 
 
             tabControl.Items.Add(room.Tab);
-            tabControl.SelectedItem = room.Tab;
+            //tabControl.SelectedItem = room.Tab;
+        }
+
+        /// <summary>
+        /// Delete rooms by name
+        /// </summary>
+        /// <param name="header"></param>
+        private void DeleteRoom(string header, int roomId)
+        {
+            Room room = activeRoomList.Find(x => x.Id == roomId && x.Header == header);
+            activeRoomList.Remove(room);
+            tabControl.Items.Remove(room.Tab);
         }
 
         private void tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)

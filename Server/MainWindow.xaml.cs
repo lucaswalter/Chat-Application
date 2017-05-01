@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using Protocol;
 using Newtonsoft.Json;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Server
 {
@@ -87,6 +88,9 @@ namespace Server
             // Add Default Room
             roomList = new List<Room>();
             AddRoom("Welcome!");
+            AddRoom("CS 3100");
+            AddRoom("ProgLang");
+            AddRoom("#Team4");
         }
         private void InitializeServerConnection()
         {
@@ -119,7 +123,7 @@ namespace Server
                 // Start listening for incoming data
                 serverSocket.BeginReceiveFrom(this.dataStream, 0, this.dataStream.Length, SocketFlags.None, ref epSender, new AsyncCallback(ReceiveData), epSender);
 
-                ServerComTextBox.Text = "Listening" + "\n";
+                ServerComTextBox.Text = "Listening for Clients..." + "\n";
             }
             catch (Exception ex)
             {
@@ -143,8 +147,8 @@ namespace Server
                     Who = "SERVER",
                     What = "--- !!! SERVER IS SHUTTING DOWN !!! ---",
                     When = DateTime.Now.ToShortTimeString(),
-                    Where = 0, // Default Chat Room
-                    Why = Protocol.Protocol.GLOBAL_WARNING_MESSAGE
+                    Where = -1, // All Rooms
+                    Why = Protocol.Protocol.PUBLIC_MESSAGE
                 };
 
                 string jsonMessage = JsonConvert.SerializeObject(sendData);
@@ -155,7 +159,7 @@ namespace Server
                 msg = enc.GetBytes(jsonMessage);
 
                 // Send message to server
-                foreach (Client client in this.clientList)
+                foreach (Client client in clientList)
                 {
                     this.serverSocket.SendTo(msg, 0, msg.Length, SocketFlags.None, client.endPoint);
                 }
@@ -276,9 +280,9 @@ namespace Server
                             sendOne = SendRooms(message);
                             multiMessage = true;
 
-                            sending.Where = 0;
+                            sending.Where = -1;
                             sending.What = string.Format("-- {0} is online --", message.Who);
-                            sending.Why = 100;
+                            sending.Why = Protocol.Protocol.PUBLIC_MESSAGE;
                             break;
 
                         case Protocol.Protocol.ADD_FRIEND:
@@ -325,8 +329,8 @@ namespace Server
                                 }
                             }
                             sending.What = string.Format("-- {0} has gone offline --", message.Who);
-                            sending.Where = 0;
-                            sending.Why = 100;
+                            sending.Where = -1;
+                            sending.Why = Protocol.Protocol.PUBLIC_MESSAGE;
                             break;
 
                         case Protocol.Protocol.RETRIEVE_FRIENDS:
@@ -382,6 +386,7 @@ namespace Server
 
                         case Protocol.Protocol.CLOSE_ROOM:
 
+
                             break;
 
                         default:
@@ -420,8 +425,16 @@ namespace Server
                         }
                     }
 
+                    if (sending.Where == -1)
+                    {
+                        foreach (Client client in clientList)
+                        {
+                            serverSocket.BeginSendTo(msg, 0, msg.Length, SocketFlags.None, client.endPoint, new AsyncCallback(this.SendData), client.endPoint);
+                        }
+                    }
+
                     // Begin Sending to all clients in the Room
-                    if (!singleUser)
+                    if (!singleUser && sending.Where != -1)
                     {
                         foreach (Room r in roomList)
                         {
@@ -476,7 +489,7 @@ namespace Server
 
             foreach (Room r in roomList)
             {
-                if ( message.Where == r.id)
+                if ( message.Where == r.id || message.Where == -1)
                 {
                     r.txtbox.Text += formattedText + Environment.NewLine;
                     r.txtbox.ScrollToEnd();
@@ -540,6 +553,8 @@ namespace Server
 
             room.header = header;
             roomList.Add(room);
+
+            SendRoomChange(room, Protocol.Protocol.CREATE_PUBLIC_ROOM);
             
             tabCtrl.Items.Add(room.tab);
             tabCtrl.SelectedItem = room.tab;
@@ -571,6 +586,31 @@ namespace Server
             return sendingRooms;
         }
 
+        private void SendRoomChange(Room room, int protocol)
+        {
+            Message message = new Message
+            {
+                Who = null,
+                What = room.header,
+                When = DateTime.Now.ToShortTimeString(),
+                Where = room.id,
+                Why = protocol
+            };
+
+            string jsonMessage = JsonConvert.SerializeObject(message);
+
+            // Encode Into Byte Array
+            var enc = new ASCIIEncoding();
+            byte[] msg = new byte[1500];
+            msg = enc.GetBytes(jsonMessage);
+
+            // Send message to server
+            foreach (Client client in clientList)
+            {
+                this.serverSocket.SendTo(msg, 0, msg.Length, SocketFlags.None, client.endPoint);
+            }
+        }
+
         private void tabCtrl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             TabControl tabControl = (TabControl)sender;
@@ -588,13 +628,23 @@ namespace Server
         {
             if (tabCtrl.SelectedIndex > 0)
             {
+                Room room = roomList[tabCtrl.SelectedIndex];
+                SendRoomChange(room, Protocol.Protocol.CLOSE_ROOM);
+
                 tabCtrl.Items.Remove(roomList[tabCtrl.SelectedIndex].tab);
                 roomList.RemoveAt(tabCtrl.SelectedIndex);
+
             }
             else
             {
                 MessageBox.Show("Cannot Delete the initial Room");
             }
+        }
+
+        private void ServerCommInput_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter || e.Key == Key.Return)
+                Command_Button(sender, e);
         }
     }
 }
