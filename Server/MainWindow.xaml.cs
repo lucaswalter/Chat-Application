@@ -485,7 +485,7 @@ namespace Server
 
             foreach (Room r in roomList)
             {
-                if ( message.Where == r.id)
+                if ( message.Where == r.id || message.Where == -1)
                 {
                     r.txtbox.Text += formattedText + Environment.NewLine;
                     r.txtbox.ScrollToEnd();
