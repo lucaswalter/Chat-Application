@@ -421,8 +421,16 @@ namespace Server
                         }
                     }
 
+                    if (sending.Where == -1)
+                    {
+                        foreach (Client client in clientList)
+                        {
+                            serverSocket.BeginSendTo(msg, 0, msg.Length, SocketFlags.None, client.endPoint, new AsyncCallback(this.SendData), client.endPoint);
+                        }
+                    }
+
                     // Begin Sending to all clients in the Room
-                    if (!singleUser)
+                    if (!singleUser && sending.Where != -1)
                     {
                         foreach (Room r in roomList)
                         {
