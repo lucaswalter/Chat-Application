@@ -111,10 +111,10 @@ namespace Server
                 serverSocket.Bind(server);
 
                 // Initialise the IPEndPoint for the clients
-                IPEndPoint clients = new IPEndPoint(IPAddress.Any, 0);
+                IPEndPoint clientEP = new IPEndPoint(IPAddress.Any, 0);
 
                 // Initialise the EndPoint for the clients
-                EndPoint epSender = (EndPoint)clients;
+                EndPoint epSender = (EndPoint)clientEP;
 
                 // Start listening for incoming data
                 serverSocket.BeginReceiveFrom(this.dataStream, 0, this.dataStream.Length, SocketFlags.None, ref epSender, new AsyncCallback(ReceiveData), epSender);
@@ -189,10 +189,13 @@ namespace Server
             try
             {
                 // Initialise the IPEndPoint for the clients
-                IPEndPoint clients = new IPEndPoint(IPAddress.Any, 0);
+                IPEndPoint clientEP = new IPEndPoint(IPAddress.Any, 0);
 
                 // Initialise the EndPoint for the clients
-                EndPoint epSender = (EndPoint)clients;
+                EndPoint epSender = (EndPoint)clientEP;
+
+                bool singleUser = false;
+                bool multiMessage = false;
 
 
                 // Check if Data Exists
@@ -219,6 +222,9 @@ namespace Server
 
                     // Initialize new message to be sent
                     Message sending = new Message();
+
+                    // Initialize new message to be sent to only one user
+                    Message sendOne = new Message();
 
                     this.dataStream = new byte[1500];
 
@@ -259,7 +265,16 @@ namespace Server
 
                             // Add client to list
                             this.clientList.Add(client);
-                            roomList[0].clients.Add(client);
+                            foreach(Room r in roomList)
+                            {
+                                if(!r.isPrivate)
+                                {
+                                    r.clients.Add(client);
+                                }
+                            }
+                            //roomList[0].clients.Add(client);
+                            sendOne = SendRooms(message);
+                            multiMessage = true;
 
                             sending.Where = 0;
                             sending.What = string.Format("-- {0} is online --", message.Who);
@@ -334,6 +349,9 @@ namespace Server
 
                         // {"null", "null", "timestamp", "null", "protocol"}
                         case Protocol.Protocol.SEND_PUBLIC_ROOMS:
+                            // Sends a string of all current public rooms to the user
+                            sendOne = SendRooms(message);
+                            singleUser = true;
 
                             break;
 
@@ -381,23 +399,45 @@ namespace Server
                     byte[] msg = new byte[1500];
                     msg = enc.GetBytes(jsonMessage);
 
-                    // Begin Sending to Clients
-                    // Clients will recieve the message if...
-                    foreach(Room r in roomList)
+                    // Will be used if a message is to be sent to a sinle user
+                    byte[] msgOne = new byte[1500];
+
+                    // Build message to send to single Client and Send
+                    if (singleUser || multiMessage)
                     {
-                        if (sending.Where==r.id)
+                        string jsonMessageOne = JsonConvert.SerializeObject(sendOne);
+
+                        // Encode Into Byte Array
+                        var encOne = new ASCIIEncoding();
+                        msgOne = encOne.GetBytes(jsonMessageOne);
+                        foreach (Client client in clientList)
                         {
-                            foreach(Client client in r.clients)  // ...the client is in the list of clients able to view the room being sent to
+                            if (client.name == message.Who)
                             {
-                                if (client.endPoint != epSender)
-                                {
-                                    // Broadcast to all logged on users
-                                    serverSocket.BeginSendTo(msg, 0, msg.Length, SocketFlags.None, client.endPoint, new AsyncCallback(this.SendData), client.endPoint);
-                                }
+                                serverSocket.BeginSendTo(msgOne, 0, msgOne.Length, SocketFlags.None, client.endPoint, new AsyncCallback(this.SendData), client.endPoint);
+                                this.Dispatcher.Invoke(this.updateStatusDelegate, new object[] { "--> " + jsonMessageOne });
                             }
                         }
                     }
 
+                    // Begin Sending to all clients in the Room
+                    if (!singleUser)
+                    {
+                        foreach (Room r in roomList)
+                        {
+                            if (sending.Where == r.id)
+                            {
+                                foreach (Client client in r.clients)  // Send if the client is in the list of clients able to view the room being sent to
+                                {
+                                    if (client.endPoint != epSender)
+                                    {
+                                        // Broadcast to all logged on users
+                                        serverSocket.BeginSendTo(msg, 0, msg.Length, SocketFlags.None, client.endPoint, new AsyncCallback(this.SendData), client.endPoint);
+                                    }
+                                }
+                            }
+                        }
+                    }
                     // Listen for more connections again...
                     serverSocket.BeginReceiveFrom(this.dataStream, 0, this.dataStream.Length, SocketFlags.None, ref epSender, new AsyncCallback(this.ReceiveData), epSender);
 
@@ -505,6 +545,32 @@ namespace Server
             tabCtrl.SelectedItem = room.tab;
         }
 
+        private Message SendRooms(Message recievedMessage)
+        {
+            Message sendingRooms = new Message();
+            string roomids = "";
+            string roomheaders = "";
+
+            foreach (Room room in roomList)
+            {
+                if (!room.isPrivate)
+                {
+                    roomids += room.id.ToString() + ",";
+                    roomheaders += room.header + ",";
+                }
+            }
+            roomids = roomids.TrimEnd(',');
+            roomheaders = roomheaders.TrimEnd(',');
+           
+            sendingRooms.Who = roomids;
+            sendingRooms.What = roomheaders;
+            sendingRooms.When = recievedMessage.When;
+            sendingRooms.Where = -1;
+            sendingRooms.Why = Protocol.Protocol.SEND_PUBLIC_ROOMS;
+
+            return sendingRooms;
+        }
+
         private void tabCtrl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             TabControl tabControl = (TabControl)sender;
@@ -529,11 +595,6 @@ namespace Server
             {
                 MessageBox.Show("Cannot Delete the initial Room");
             }
-        }
-
-        private void btntestroom_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Tab Index: " + tabCtrl.SelectedIndex + "\nRoom Header: " + roomList[tabCtrl.SelectedIndex].header + "\nRoom ID: " + roomList[tabCtrl.SelectedIndex].id);
         }
     }
 }
