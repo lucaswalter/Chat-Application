@@ -25,7 +25,6 @@ namespace Client
         {
             InitializeComponent();
             UserName = userName;
-            availableRoomList = new List<Room>();
             activeRoomList = new List<Room>();
             InitializeServerConnection();
         }
