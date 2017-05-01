@@ -48,8 +48,11 @@ namespace Client
         private delegate void UpdateRoomsDelegate(string roomIds, string roomHeaders);
         private UpdateRoomsDelegate updateRoomsDelegate = null;
 
+        /*private delegate void CreateRoomsDelegate(string roomHeader, int roomId);
+        private CreateRoomsDelegate createRoomDelegate = null;*/
+
         private delegate void DeleteRoomsDelegate(string roomHeader, int roomId);
-        private DeleteRoomsDelegate deleteRoomsDelegate = null;
+        private DeleteRoomsDelegate deleteRoomDelegate = null;
 
         #endregion
 
@@ -62,7 +65,8 @@ namespace Client
                 // Initialize Delegate
                 this.displayMessageDelegate = new DisplayMessageDelegate(this.AppendLineToChatBox);
                 this.updateRoomsDelegate = new UpdateRoomsDelegate(this.UpdateRooms);
-                this.deleteRoomsDelegate = new DeleteRoomsDelegate(this.DeleteRoom);
+                //this.createRoomDelegate = new CreateRoomsDelegate(this.CreateRoom);
+                this.deleteRoomDelegate = new DeleteRoomsDelegate(this.DeleteRoom);
 
                 // Initialise socket
                 this.clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
@@ -159,9 +163,14 @@ namespace Client
                             this.Dispatcher.Invoke(this.updateRoomsDelegate, new object[] { message.Who, message.What });
                             break;
 
+                        /*case Protocol.Protocol.CREATE_PUBLIC_ROOM:
+                            // Update Tabs Through Delegate
+                            this.Dispatcher.Invoke(this.createRoomDelegate, new object[] { message.Who, message.What });
+                            break;*/
+
                         case Protocol.Protocol.CLOSE_ROOM:
                             // Delete Tabs Through Deletate
-                            this.Dispatcher.Invoke(this.deleteRoomsDelegate, new object[] { message.Who, message.Where });
+                            this.Dispatcher.Invoke(this.deleteRoomDelegate, new object[] { message.Who, message.Where });
                             break;
                     }
 
