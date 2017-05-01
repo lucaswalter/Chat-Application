@@ -515,7 +515,30 @@ namespace Server
         {
             if(!String.IsNullOrEmpty(ServerCommInput.Text))
             {
-                ServerComTextBox.Text += ServerCommInput.Text + "\n";
+                Message message = new Message
+                {
+                    Who = "SERVER",
+                    What = ServerCommInput.Text,
+                    When = DateTime.Now.ToShortTimeString(),
+                    Where = roomList[tabCtrl.SelectedIndex].id,
+                    Why = Protocol.Protocol.PUBLIC_MESSAGE
+                };
+
+                string jsonMessage = JsonConvert.SerializeObject(message);
+
+                // Encode Into Byte Array
+                var enc = new ASCIIEncoding();
+                byte[] msg = new byte[1500];
+                msg = enc.GetBytes(jsonMessage);
+
+                // Send message to server
+
+                foreach (Client client in roomList[tabCtrl.SelectedIndex].clients)
+                {
+                    this.serverSocket.SendTo(msg, 0, msg.Length, SocketFlags.None, client.endPoint);
+                }
+                //ServerComTextBox.Text += ServerCommInput.Text + "\n";
+                this.Dispatcher.Invoke(this.updateRoomsDelegate, new object[] { message });
                 ServerCommInput.Clear();
             }
              
@@ -552,6 +575,10 @@ namespace Server
             }
 
             room.header = header;
+            foreach (Client client in clientList)
+            {
+                room.clients.Add(client);
+            }
             roomList.Add(room);
 
             SendRoomChange(room, Protocol.Protocol.CREATE_PUBLIC_ROOM);
@@ -645,6 +672,39 @@ namespace Server
         {
             if (e.Key == Key.Enter || e.Key == Key.Return)
                 Command_Button(sender, e);
+        }
+
+        private void Blast_Button(object sender, RoutedEventArgs e)
+        {
+            if (!String.IsNullOrEmpty(ServerCommInput.Text))
+            {
+                Message message = new Message
+                {
+                    Who = "SERVER",
+                    What = ServerCommInput.Text,
+                    When = DateTime.Now.ToShortTimeString(),
+                    Where = -1,
+                    Why = Protocol.Protocol.PUBLIC_MESSAGE
+                };
+
+                string jsonMessage = JsonConvert.SerializeObject(message);
+
+                // Encode Into Byte Array
+                var enc = new ASCIIEncoding();
+                byte[] msg = new byte[1500];
+                msg = enc.GetBytes(jsonMessage);
+
+                // Send message to server
+
+                foreach (Client client in clientList)
+                {
+                    this.serverSocket.SendTo(msg, 0, msg.Length, SocketFlags.None, client.endPoint);
+                }
+                //ServerComTextBox.Text += ServerCommInput.Text + "\n";
+                this.Dispatcher.Invoke(this.updateRoomsDelegate, new object[] { message });
+                ServerCommInput.Clear();
+            }
+
         }
     }
 }
