@@ -170,7 +170,7 @@ namespace Client
 
                         case Protocol.Protocol.CLOSE_ROOM:
                             // Delete Tabs Through Deletate
-                            this.Dispatcher.Invoke(this.deleteRoomDelegate, new object[] { message.Who, message.Where });
+                            this.Dispatcher.Invoke(this.deleteRoomDelegate, new object[] { message.What, message.Where });
                             break;
                     }
 
