@@ -1,4 +1,4 @@
-<!--- Sever 4 Command Center-->
+<!--- Server 4 Command Center-->
 <!--- Created for CS3500 Spring 2017-->
 <Window x:Class="Server.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -66,11 +66,11 @@
         <TextBlock Grid.Row="4" Grid.Column="1" Margin="23,15,0,15" 
                    HorizontalAlignment="Left" Text="Command: " VerticalAlignment="Center" FontWeight="Bold" />
         <!--- This is the TextBox that the user types commands into -->
-        <TextBox x:Name="ServerCommInput" Grid.Row="4" Grid.Column="2" Margin="0,5" Grid.ColumnSpan="2"
+        <TextBox x:Name="ServerCommInput" Grid.Row="4" Grid.Column="1" Margin="93,8,52,8" Grid.ColumnSpan="3"
                  HorizontalAlignment="Stretch" Text="" VerticalContentAlignment="Center" FontSize="13" Height="30" KeyUp="ServerCommInput_KeyUp"/>
         <!--- This button will submit the command -->
-        <Button x:Name="ServerCommButton" Grid.Row="4" Grid.Column="4" Margin="5,5" FontSize="12"
-            Content="Send" Click="Command_Button" Height="25" Width="40" VerticalAlignment="Center"/>
+        <Button x:Name="ServerBlastButton" Grid.Row="4" Grid.Column="4" Margin="6,11,10,11" FontSize="12"
+            Content="Blast" Click="Blast_Button" Height="24" Width="40" VerticalAlignment="Center"/>
         <!--- This is where the past commands/what the commands do will show-->
         <TextBox x:Name="ServerComTextBox" Grid.Row="3" Grid.Column="1" Margin="5,34,5,0" Grid.ColumnSpan="4"
                    Text="" IsReadOnly="True" Background="#FFC7D4F0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"/>
@@ -112,6 +112,8 @@
             Content="Add Room" Click="btnNewRoom_Click" Grid.ColumnSpan="2" HorizontalAlignment="Right" Width="53" Height="16" VerticalAlignment="Top"/>
         <Button x:Name="btnDeleteRoom" Grid.Column="3" Margin="0,2,5,0" FontSize="10"
             Content="Delete Room" Click="btnDeleteRoom_Click" HorizontalAlignment="Right" Width="62" Height="16" VerticalAlignment="Top"/>
+        <Button x:Name="ServerCommButton" Grid.Row="4" Grid.Column="3" Margin="68,11,0,11" FontSize="12"
+            Content="Send" Click="Command_Button" Height="24" Width="40" VerticalAlignment="Center" HorizontalAlignment="Left"/>
 
     </Grid>
 </Window>
