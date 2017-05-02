@@ -1,0 +1,19 @@
+﻿<Controls:MetroWindow 
+    x:Class="Client.LoginWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:Client"
+    mc:Ignorable="d"
+    Title="Chat Client | Login" Height="500" Width="350"
+    ResizeMode="NoResize">
+
+    <Grid>
+        <Label Content="Welcome To The Chat!" HorizontalAlignment="Left" Margin="60,129,0,0" VerticalAlignment="Top" Height="40" Width="233" FontSize="22"/>
+        <Label Content="Enter Your User Name To Continue..." HorizontalAlignment="Left" Margin="60,169,0,0" VerticalAlignment="Top" Height="30" Width="233" FontSize="14"/>
+        <TextBox x:Name="loginTextBox" HorizontalAlignment="Left" Height="32" Margin="71,239,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="206" FontSize="18"/>
+        <Button Content="Login" HorizontalAlignment="Left" Margin="71,279,0,0" VerticalAlignment="Top" Width="206" Height="40" RenderTransformOrigin="0.502,2.522" FontSize="18" Click="LoginButton_Click"/>
+    </Grid>
+</Controls:MetroWindow>
